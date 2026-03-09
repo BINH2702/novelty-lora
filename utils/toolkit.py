@@ -126,9 +126,9 @@ def check_params_consistency(model, optimizer):
     ok = (len(only_in_model) == 0 and len(only_in_optim) == 0)
 
     if ok:
-        print("✅ Requires_grad parameters and optimizer parameters are consistent.")
+        print("[OK] Requires_grad parameters and optimizer parameters are consistent.")
     else:
-        print("❌ WARNING: Inconsistency detected!")
+        print("[WARN] Inconsistency detected!")
 
     return ok
 
