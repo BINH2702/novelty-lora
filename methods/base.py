@@ -128,6 +128,7 @@ class BaseLearner(object):
         self.known_classes = self.total_classes
 
     def incremental_train(self, data_manager):
+        self.data_manager = data_manager
         self.build_train_loader(data_manager)
         logging.info('Task {} learning on class {}-{}'.format(self.cur_task, self.known_classes, self.total_classes))
         self._train(self.train_loader)

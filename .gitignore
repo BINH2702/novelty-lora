@@ -1,1 +1,5 @@
 .venv38/
+__pycache__/                                                                                                                                                                                                                                 
+ *.py[cod]     
+data/
+logs/

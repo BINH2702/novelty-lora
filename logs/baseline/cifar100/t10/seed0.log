@@ -153,3 +153,59 @@
 2026-02-13 17:45:01,000 [trainer.py] => (curve) top1 Acc with task: [99.4, 99.3, 98.83, 98.8, 98.62, 98.52, 98.19, 98.1, 97.88, 97.81]
 2026-02-13 17:45:01,000 [trainer.py] => (curve) top1 Acc task: [1.0, 0.968, 0.9533333333333334, 0.9345, 0.9186, 0.8928333333333334, 0.8872857142857142, 0.871125, 0.8644444444444445, 0.8424]
 2026-02-13 17:45:01,000 [trainer.py] => ================================================================================
+2026-03-09 13:29:44,868 [toolkit.py] => config: .\configs\baseline\cifar100.json
+2026-03-09 13:29:44,868 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-03-09 13:29:44,868 [toolkit.py] => debug: False
+2026-03-09 13:29:44,868 [toolkit.py] => save_ckp: False
+2026-03-09 13:29:44,869 [toolkit.py] => seed: 0
+2026-03-09 13:29:44,869 [toolkit.py] => dataset: cifar100
+2026-03-09 13:29:44,869 [toolkit.py] => data_path: data/cifar100
+2026-03-09 13:29:44,869 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-03-09 13:29:44,869 [toolkit.py] => init_cls: 10
+2026-03-09 13:29:44,869 [toolkit.py] => increment: 10
+2026-03-09 13:29:44,869 [toolkit.py] => sessions: 10
+2026-03-09 13:29:44,869 [toolkit.py] => shuffle: False
+2026-03-09 13:29:44,869 [toolkit.py] => method: baseline
+2026-03-09 13:29:44,869 [toolkit.py] => optimizer: adam
+2026-03-09 13:29:44,869 [toolkit.py] => scheduler: cosine
+2026-03-09 13:29:44,869 [toolkit.py] => epochs: 20
+2026-03-09 13:29:44,869 [toolkit.py] => lrate: 0.0005
+2026-03-09 13:29:44,869 [toolkit.py] => fc_lrate: 0.005
+2026-03-09 13:29:44,869 [toolkit.py] => weight_decay: 0.0
+2026-03-09 13:29:44,869 [toolkit.py] => batch_size: 128
+2026-03-09 13:29:44,869 [toolkit.py] => rank: 10
+2026-03-09 13:29:44,870 [toolkit.py] => num_workers: 16
+2026-03-09 13:29:44,870 [toolkit.py] => logdir: logs/baseline/cifar100/t10
+2026-03-09 13:29:44,870 [toolkit.py] => logfilename: logs/baseline/cifar100/t10\seed0
+2026-03-09 13:42:04,758 [toolkit.py] => config: configs/baseline/cifar100.json
+2026-03-09 13:42:04,759 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-03-09 13:42:04,760 [toolkit.py] => debug: False
+2026-03-09 13:42:04,760 [toolkit.py] => save_ckp: False
+2026-03-09 13:42:04,760 [toolkit.py] => seed: 0
+2026-03-09 13:42:04,760 [toolkit.py] => dataset: cifar100
+2026-03-09 13:42:04,760 [toolkit.py] => data_path: data/cifar100
+2026-03-09 13:42:04,760 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-03-09 13:42:04,761 [toolkit.py] => init_cls: 10
+2026-03-09 13:42:04,761 [toolkit.py] => increment: 10
+2026-03-09 13:42:04,761 [toolkit.py] => sessions: 10
+2026-03-09 13:42:04,761 [toolkit.py] => shuffle: False
+2026-03-09 13:42:04,761 [toolkit.py] => method: baseline
+2026-03-09 13:42:04,761 [toolkit.py] => optimizer: adam
+2026-03-09 13:42:04,762 [toolkit.py] => scheduler: cosine
+2026-03-09 13:42:04,762 [toolkit.py] => epochs: 20
+2026-03-09 13:42:04,762 [toolkit.py] => lrate: 0.0005
+2026-03-09 13:42:04,762 [toolkit.py] => fc_lrate: 0.005
+2026-03-09 13:42:04,762 [toolkit.py] => weight_decay: 0.0
+2026-03-09 13:42:04,762 [toolkit.py] => batch_size: 128
+2026-03-09 13:42:04,762 [toolkit.py] => rank: 10
+2026-03-09 13:42:04,762 [toolkit.py] => num_workers: 16
+2026-03-09 13:42:04,763 [toolkit.py] => logdir: logs/baseline/cifar100/t10
+2026-03-09 13:42:04,763 [toolkit.py] => logfilename: logs/baseline/cifar100/t10\seed0
+2026-03-09 13:42:25,345 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-03-09 13:42:27,204 [hub.py] => Downloading: "https://storage.googleapis.com/vit_models/augreg/B_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.0-sd_0.0.npz" to C:\Users\Admin/.cache\torch\hub\checkpoints\B_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.0-sd_0.0.npz
+
+2026-03-09 13:43:13,534 [trainer.py] => ================================================================================
+2026-03-09 13:43:13,572 [base.py] => Task 0 learning on class 0-10
+2026-03-09 13:43:14,105 [toolkit.py] => Total params:     103,410,103
+2026-03-09 13:43:14,105 [toolkit.py] => Trainable params: 376,330
+2026-03-09 13:43:14,106 [toolkit.py] => Trainable ratio:  0.3639%
