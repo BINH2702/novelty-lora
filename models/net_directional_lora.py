@@ -181,9 +181,26 @@ class Net(nn.Module):
             penalty = penalty + module.regularization_loss(device)
         return penalty
 
-    def consolidate_task(self, gamma):
-        for module in self.iter_attention_modules():
-            module.consolidate_task(gamma)
+    def consolidate_task(
+        self,
+        gamma,
+        historical_rank_map=None,
+        conflict_gate_strength=0.0,
+        conflict_gate_floor=0.0,
+    ):
+        gate_stats = []
+        for module_idx, module in enumerate(self.iter_attention_modules()):
+            historical_rank = None if historical_rank_map is None else historical_rank_map.get(module_idx)
+            stats = module.consolidate_task(
+                gamma,
+                historical_rank=historical_rank,
+                conflict_gate_strength=conflict_gate_strength,
+                conflict_gate_floor=conflict_gate_floor,
+            )
+            if stats is not None:
+                stats["module_index"] = module_idx
+                gate_stats.append(stats)
+        return gate_stats
 
     def update_importance(self, fisher_values, decay):
         idx = 0

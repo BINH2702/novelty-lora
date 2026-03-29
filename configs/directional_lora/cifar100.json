@@ -31,5 +31,11 @@
 
     "diag_enabled" : true,
     "diag_topk" : 3,
-    "diag_perturb_scale" : 0.1
+    "diag_perturb_scale" : 0.1,
+
+    "max_tasks" : 6,                                                                                                                     
+    "conflict_gate_enabled" : true,                                                                                                      
+    "conflict_gate_strength" : 0.5,                                                                                                      
+    "conflict_gate_floor" : 0.1                                                                                                          
+                              
 }

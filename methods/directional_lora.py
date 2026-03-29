@@ -33,6 +33,10 @@ class DirectionalLoRA(BaseLearner):
         self.diag_topk = args.get("diag_topk", 3)
         self.diag_perturb_scale = args.get("diag_perturb_scale", 0.1)
         self.diag_old_new_split = args.get("diag_old_new_split", True)
+        gate_flag = args.get("conflict_gate_enabled", args.get("conflict_gate", False))
+        self.conflict_gate_enabled = _as_bool(gate_flag, default=False)
+        self.conflict_gate_strength = _as_float(args.get("conflict_gate_strength", 0.5), default=0.5)
+        self.conflict_gate_floor = _as_float(args.get("conflict_gate_floor", 0.0), default=0.0)
 
         self.count_updates = 0
         self._historical_rank_snapshot = None
@@ -115,7 +119,17 @@ class DirectionalLoRA(BaseLearner):
             self._run_posttraining_diagnostics()
 
         self._update_importance()
-        self.network.consolidate_task(self.gamma)
+        gate_strength = self.conflict_gate_strength if self.conflict_gate_enabled and self.count_updates > 0 else 0.0
+        gate_stats = self.network.consolidate_task(
+            self.gamma,
+            historical_rank_map=self._historical_rank_snapshot,
+            conflict_gate_strength=gate_strength,
+            conflict_gate_floor=self.conflict_gate_floor,
+        )
+        if gate_stats:
+            payload = self._summarize_conflict_gate_stats(gate_stats, gate_strength)
+            if payload is not None:
+                self._record_diagnostics(payload)
         self.count_updates += 1
         super().after_task()
 
@@ -394,6 +408,47 @@ class DirectionalLoRA(BaseLearner):
             with open(path, "a", encoding="utf-8") as handle:
                 handle.write(json.dumps(payload, sort_keys=True) + "\n")
 
+    def _summarize_conflict_gate_stats(self, gate_stats, gate_strength):
+        gate_means = []
+        gate_mins = []
+        conflict_means = []
+        conflict_maxs = []
+        anti_means = []
+        magnitude_means = []
+        num_new_ranks = 0
+
+        for layer_stats in gate_stats:
+            for key in ("gate_k", "gate_v"):
+                branch = layer_stats.get(key)
+                if branch is None:
+                    continue
+                num_new_ranks += int(branch["num_new_ranks"])
+                gate_means.append(float(branch["gate_mean"]))
+                gate_mins.append(float(branch["gate_min"]))
+                conflict_means.append(float(branch["conflict_mean"]))
+                conflict_maxs.append(float(branch["conflict_max"]))
+                anti_means.append(float(branch["anti_alignment_mean"]))
+                magnitude_means.append(float(branch["magnitude_mean"]))
+
+        if not gate_means:
+            return None
+
+        return {
+            "task": self.cur_task,
+            "stage": "consolidate",
+            "conflict_gate_enabled": bool(gate_strength > 0.0),
+            "conflict_gate_strength": float(gate_strength),
+            "conflict_gate_floor": float(self.conflict_gate_floor),
+            "num_layers_gated": len(gate_stats),
+            "num_new_ranks_gated": int(num_new_ranks),
+            "gate_mean": float(np.mean(gate_means)),
+            "gate_min": float(np.min(gate_mins)),
+            "conflict_mean": float(np.mean(conflict_means)),
+            "conflict_max": float(np.max(conflict_maxs)),
+            "anti_alignment_mean": float(np.mean(anti_means)),
+            "magnitude_mean": float(np.mean(magnitude_means)),
+        }
+
 
 class FisherComputer:
     def __init__(self, network, dataloader, known_classes, criterion, device):
@@ -474,6 +529,27 @@ def _safe_fraction(numerator, denominator):
     if abs(denominator) < 1e-12:
         return None
     return float(numerator / denominator)
+
+
+def _as_bool(value, default=False):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        token = value.strip().lower()
+        if token in {"1", "true", "t", "yes", "y", "on"}:
+            return True
+        if token in {"0", "false", "f", "no", "n", "off"}:
+            return False
+    return default
+
+
+def _as_float(value, default=0.0):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return float(default)
 
 
 def _top_bottom_summary(stats, topk):

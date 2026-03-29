@@ -164,14 +164,114 @@ class AttentionDirectionalLoRA(nn.Module):
         )
         return 0.5 * (novelty_k + novelty_v)
 
-    def consolidate_task(self, gamma):
+    def _compute_new_rank_gates(
+        self,
+        memory,
+        buffer,
+        basis,
+        importance,
+        historical_rank,
+        rank,
+        conflict_gate_strength,
+        conflict_gate_floor,
+    ):
+        new_coeff = buffer[:, historical_rank:rank]
+        num_new = new_coeff.size(1)
+        gates = torch.ones(num_new, device=new_coeff.device, dtype=new_coeff.dtype)
+
+        if conflict_gate_strength <= 0.0 or historical_rank <= 0 or num_new == 0:
+            return gates, None
+
+        old_coeff = memory[:, :historical_rank]
+        old_basis = basis[:historical_rank, :]
+        old_importance = importance[:historical_rank].clamp(min=0.0).to(old_coeff.device)
+        old_norms = torch.linalg.norm(old_coeff, dim=0)
+        if torch.sum(old_importance).item() <= 0.0:
+            old_importance = old_norms
+        if torch.sum(old_importance).item() <= 0.0:
+            return gates, None
+
+        weights = old_importance / (torch.sum(old_importance) + 1e-12)
+        old_delta = old_coeff @ old_basis
+        old_atom_norms = torch.linalg.norm(old_coeff, dim=0) * torch.linalg.norm(old_basis, dim=1)
+        old_scale = torch.sum(weights * old_atom_norms)
+        if old_scale.item() <= 0.0:
+            return gates, None
+
+        new_basis = basis[historical_rank:rank, :]
+        proj_old_on_new_basis = old_delta @ new_basis.t()
+        overlap = torch.sum(new_coeff * proj_old_on_new_basis, dim=0)
+        new_norms = torch.linalg.norm(new_coeff, dim=0) * torch.linalg.norm(new_basis, dim=1)
+        old_norm = torch.linalg.norm(old_delta)
+
+        cosine = overlap / (new_norms * old_norm + 1e-12)
+        anti_alignment = torch.clamp(-cosine, min=0.0)
+        magnitude = new_norms / (old_scale + 1e-12)
+        conflict = anti_alignment * magnitude
+        gates = torch.clamp(1.0 - conflict_gate_strength * conflict, min=conflict_gate_floor, max=1.0)
+
+        stats = {
+            "num_new_ranks": int(num_new),
+            "gate_mean": float(gates.mean().item()),
+            "gate_min": float(gates.min().item()),
+            "conflict_mean": float(conflict.mean().item()),
+            "conflict_max": float(conflict.max().item()),
+            "anti_alignment_mean": float(anti_alignment.mean().item()),
+            "magnitude_mean": float(magnitude.mean().item()),
+        }
+        return gates, stats
+
+    def consolidate_task(
+        self,
+        gamma,
+        historical_rank=None,
+        conflict_gate_strength=0.0,
+        conflict_gate_floor=0.0,
+    ):
         rank = self.active_rank
+        historical_rank = rank if historical_rank is None else max(0, min(int(historical_rank), rank))
+        conflict_gate_floor = max(0.0, min(float(conflict_gate_floor), 1.0))
+        conflict_gate_strength = max(0.0, float(conflict_gate_strength))
+
+        gate_stats = None
+        if historical_rank < rank and conflict_gate_strength > 0.0:
+            gates_k, stats_k = self._compute_new_rank_gates(
+                self.lora_memory_k,
+                self.lora_buffer_k,
+                self.lora_basis_k,
+                self.importance_k,
+                historical_rank,
+                rank,
+                conflict_gate_strength,
+                conflict_gate_floor,
+            )
+            gates_v, stats_v = self._compute_new_rank_gates(
+                self.lora_memory_v,
+                self.lora_buffer_v,
+                self.lora_basis_v,
+                self.importance_v,
+                historical_rank,
+                rank,
+                conflict_gate_strength,
+                conflict_gate_floor,
+            )
+            self.lora_buffer_k.data[:, historical_rank:rank].mul_(gates_k.unsqueeze(0))
+            self.lora_buffer_v.data[:, historical_rank:rank].mul_(gates_v.unsqueeze(0))
+
+            gate_stats = {
+                "historical_rank": int(historical_rank),
+                "active_rank": int(rank),
+                "gate_k": stats_k,
+                "gate_v": stats_v,
+            }
+
         self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
         self.lora_memory_v.data[:, :rank] += gamma * self.lora_buffer_v.data[:, :rank]
         self.lora_buffer_k.data.zero_()
         self.lora_buffer_v.data.zero_()
         if self.active_rank > self.rank_budget:
             self._prune()
+        return gate_stats
 
     def _prune(self):
         utility_k = self.importance_k[: self.active_rank] + torch.linalg.norm(

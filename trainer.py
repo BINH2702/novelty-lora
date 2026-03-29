@@ -37,9 +37,11 @@ def initialize(args):
 def train(data_manager, model, args):
 
     curve_accy, curve_accy_with_task, curve_accy_task = {'top1': []}, {'top1': []}, {'top1': []}
+    max_tasks = _resolve_max_tasks(args, data_manager.task_num)
+    logging.info('Running %d/%d tasks', max_tasks, data_manager.task_num)
 
     # Train and Eval sequentially for N tasks
-    for task in range(data_manager.task_num):
+    for task in range(max_tasks):
         logging.info('='*80)
         model.before_task(data_manager)
 
@@ -69,3 +71,21 @@ def train(data_manager, model, args):
 
         # save model
         torch.save(model.network.state_dict(), os.path.join(args['logfilename'], "task_{}.pth".format(int(task)))) if args['save_ckp'] else None
+
+
+def _resolve_max_tasks(args, total_tasks):
+    requested = args.get('max_tasks', args.get('first_n_tasks'))
+    if requested is None:
+        return total_tasks
+
+    try:
+        requested = int(requested)
+    except (TypeError, ValueError):
+        logging.warning('Invalid max_tasks=%r, fallback to full run (%d tasks).', requested, total_tasks)
+        return total_tasks
+
+    if requested <= 0:
+        logging.warning('Non-positive max_tasks=%d, fallback to full run (%d tasks).', requested, total_tasks)
+        return total_tasks
+
+    return min(requested, total_tasks)
