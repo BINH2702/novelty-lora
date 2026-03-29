@@ -1,25 +1,25 @@
 ﻿{
     "seed" : [0],
-    "dataset" : "cifar100",
-    "data_path" : "data/cifar100",
+    "dataset" : "imagenet-r",
+    "data_path" : "data/imagenet-r",
     "load" : "vit_base_patch16_224_in21k",
 
-    "init_cls" : 10,
-    "increment" : 10,
+    "init_cls" : 20,
+    "increment" : 20,
     "sessions" : 10,
     "shuffle" : false,
 
     "method" : "directional_lora",
     "optimizer" : "adam",
     "scheduler" : "cosine",
-    "epochs" : 20,
+    "epochs" : 50,
     "lrate" : 0.0005,
-    "fc_lrate" : 0.005,
+    "fc_lrate" : 0.0005,
     "weight_decay" : 0.0,
     "batch_size" : 128,
-    "rank" : 4,
-    "rank_budget" : 10,
-    "max_rank" : 20,
+    "rank" : 10,
+    "rank_budget" : 20,
+    "max_rank" : 30,
     "grow_rank" : 2,
     "warmup_batches" : 1,
     "num_workers" : 16,
@@ -37,7 +37,7 @@
     "conflict_gate_strength" : 0.5,
     "conflict_gate_floor" : 0.1,
 
-    "mtl_enabled" : true,
+    "mtl_enabled" : false,
     "mtl_strategy" : "pcgrad",
     "mtl_eps" : 1e-12
 }

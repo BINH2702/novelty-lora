@@ -39,6 +39,9 @@ class DirectionalLoRA(BaseLearner):
         self.conflict_gate_enabled = _as_bool(gate_flag, default=False)
         self.conflict_gate_strength = _as_float(args.get("conflict_gate_strength", 0.5), default=0.5)
         self.conflict_gate_floor = _as_float(args.get("conflict_gate_floor", 0.0), default=0.0)
+        self.mtl_enabled = _as_bool(args.get("mtl_enabled", False), default=False)
+        self.mtl_strategy = str(args.get("mtl_strategy", "pcgrad")).lower()
+        self.mtl_eps = _as_float(args.get("mtl_eps", 1e-12), default=1e-12)
 
         self.count_updates = 0
         self._historical_rank_snapshot = None
@@ -89,16 +92,21 @@ class DirectionalLoRA(BaseLearner):
                 targets = torch.index_select(targets, 0, mask) - self.known_classes
 
                 logits = self.network(inputs, use_buffer=True)["logits"]
-                loss = F.cross_entropy(logits, targets)
-
+                loss_new = F.cross_entropy(logits, targets)
+                loss_reg = None
                 if self.count_updates > 0:
-                    loss = loss + self.reg_weight * self.network.directional_regularization(self.device)
+                    model_ref = self._unwrap_model()
+                    loss_reg = self.reg_weight * model_ref.directional_regularization(self.device)
 
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+                if self.mtl_enabled and self.count_updates > 0 and loss_reg is not None:
+                    total_loss = self._apply_mtl_step(loss_new, loss_reg, optimizer)
+                else:
+                    total_loss = loss_new if loss_reg is None else (loss_new + loss_reg)
+                    optimizer.zero_grad()
+                    total_loss.backward()
+                    optimizer.step()
 
-                losses += loss.item()
+                losses += total_loss.item()
                 _, preds = torch.max(logits, dim=1)
                 correct += preds.eq(targets.expand_as(preds)).cpu().sum()
                 total += len(targets)
@@ -115,6 +123,55 @@ class DirectionalLoRA(BaseLearner):
             prog_bar.set_description(info)
 
         logging.info(info)
+
+    def _unwrap_model(self):
+        return self.network.module if isinstance(self.network, nn.DataParallel) else self.network
+
+    def _get_trainable_params(self):
+        return [param for param in self.network.parameters() if param.requires_grad]
+
+    def _apply_mtl_step(self, loss_new, loss_reg, optimizer):
+        if self.mtl_strategy != "pcgrad":
+            raise ValueError(f"Unsupported mtl_strategy='{self.mtl_strategy}'.")
+
+        params = self._get_trainable_params()
+        optimizer.zero_grad()
+        grads_new = torch.autograd.grad(loss_new, params, retain_graph=True, allow_unused=True)
+        grads_reg = torch.autograd.grad(loss_reg, params, retain_graph=False, allow_unused=True)
+
+        dot = torch.tensor(0.0, device=self.device)
+        reg_norm_sq = torch.tensor(0.0, device=self.device)
+        for g_new, g_reg in zip(grads_new, grads_reg):
+            if g_new is None or g_reg is None:
+                continue
+            dot = dot + torch.sum(g_new * g_reg)
+            reg_norm_sq = reg_norm_sq + torch.sum(g_reg * g_reg)
+
+        has_conflict = dot.item() < 0.0 and reg_norm_sq.item() > self.mtl_eps
+        scale = (dot / (reg_norm_sq + self.mtl_eps)) if has_conflict else torch.tensor(0.0, device=self.device)
+
+        for param, g_new, g_reg in zip(params, grads_new, grads_reg):
+            if g_new is None and g_reg is None:
+                param.grad = None
+                continue
+
+            if g_new is None:
+                g_new_eff = torch.zeros_like(g_reg)
+            else:
+                g_new_eff = g_new
+
+            if g_reg is None:
+                g_reg_eff = torch.zeros_like(g_new_eff)
+            else:
+                g_reg_eff = g_reg
+
+            if has_conflict:
+                g_new_eff = g_new_eff - scale * g_reg_eff
+
+            param.grad = g_new_eff + g_reg_eff
+
+        optimizer.step()
+        return loss_new.detach() + loss_reg.detach()
 
     def after_task(self):
         if self.diag_enabled and self.cur_task > 0:
