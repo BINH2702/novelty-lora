@@ -55,6 +55,8 @@ class AttentionDirectionalLoRA(nn.Module):
 
         self.register_buffer("importance_k", torch.zeros(self.max_rank))
         self.register_buffer("importance_v", torch.zeros(self.max_rank))
+        self.register_buffer("importance_max_k", torch.zeros(self.max_rank))
+        self.register_buffer("importance_max_v", torch.zeros(self.max_rank))
         self.register_buffer("fisher_k", torch.zeros(dim, dim))
         self.register_buffer("fisher_v", torch.zeros(dim, dim))
 
@@ -67,6 +69,10 @@ class AttentionDirectionalLoRA(nn.Module):
         nn.init.zeros_(self.lora_memory_v)
         nn.init.zeros_(self.lora_buffer_k)
         nn.init.zeros_(self.lora_buffer_v)
+        self.importance_k.zero_()
+        self.importance_v.zero_()
+        self.importance_max_k.zero_()
+        self.importance_max_v.zero_()
 
     def _orthonormalize_basis(self, basis, rank):
         if rank <= 0:
@@ -85,7 +91,7 @@ class AttentionDirectionalLoRA(nn.Module):
             coeff = coeff + buffer[:, start:end]
         return coeff @ basis[start:end, :]
 
-    def _grow_basis(self, basis, memory, buffer, importance, grad, grow_rank, threshold):
+    def _grow_basis(self, basis, memory, buffer, importance, importance_max, grad, grow_rank, threshold):
         grad_norm = torch.linalg.norm(grad)
         if grad_norm.item() == 0:
             return 0.0
@@ -110,6 +116,7 @@ class AttentionDirectionalLoRA(nn.Module):
         memory.data[:, rank : rank + add_rank].zero_()
         buffer.data[:, rank : rank + add_rank].zero_()
         importance.data[rank : rank + add_rank].zero_()
+        importance_max.data[rank : rank + add_rank].zero_()
         self.active_rank += add_rank
         return novelty
 
@@ -125,6 +132,7 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_memory_k,
             self.lora_buffer_k,
             self.importance_k,
+            self.importance_max_k,
             grad_k,
             grow_rank,
             threshold,
@@ -134,6 +142,7 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_memory_v,
             self.lora_buffer_v,
             self.importance_v,
+            self.importance_max_v,
             grad_v,
             grow_rank,
             threshold,
@@ -149,6 +158,7 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_memory_k,
             self.lora_buffer_k,
             self.importance_k,
+            self.importance_max_k,
             grad_k,
             grow_rank,
             threshold,
@@ -158,6 +168,7 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_memory_v,
             self.lora_buffer_v,
             self.importance_v,
+            self.importance_max_v,
             grad_v,
             grow_rank,
             threshold,
@@ -292,6 +303,8 @@ class AttentionDirectionalLoRA(nn.Module):
         self.lora_buffer_v.data[:, : self.rank_budget].copy_(self.lora_buffer_v.data[:, keep])
         self.importance_k.data[: self.rank_budget].copy_(self.importance_k.data[keep])
         self.importance_v.data[: self.rank_budget].copy_(self.importance_v.data[keep])
+        self.importance_max_k.data[: self.rank_budget].copy_(self.importance_max_k.data[keep])
+        self.importance_max_v.data[: self.rank_budget].copy_(self.importance_max_v.data[keep])
 
         self.lora_basis_k.data[self.rank_budget :].zero_()
         self.lora_basis_v.data[self.rank_budget :].zero_()
@@ -301,43 +314,117 @@ class AttentionDirectionalLoRA(nn.Module):
         self.lora_buffer_v.data[:, self.rank_budget :].zero_()
         self.importance_k.data[self.rank_budget :].zero_()
         self.importance_v.data[self.rank_budget :].zero_()
+        self.importance_max_k.data[self.rank_budget :].zero_()
+        self.importance_max_v.data[self.rank_budget :].zero_()
         self.active_rank = self.rank_budget
         self._orthonormalize_basis(self.lora_basis_k, self.active_rank)
         self._orthonormalize_basis(self.lora_basis_v, self.active_rank)
 
-    def update_importance(self, fisher_k, fisher_v, decay):
+    def update_importance(self, fisher_k, fisher_v, decay, floor_frac=0.0):
         with torch.no_grad():
             self.fisher_k.copy_(fisher_k.to(self.fisher_k.device))
             self.fisher_v.copy_(fisher_v.to(self.fisher_v.device))
 
             rank = self.active_rank
-            coeff_k = (self.lora_memory_k.detach() + self.lora_buffer_k.detach())[:, :rank]
-            coeff_v = (self.lora_memory_v.detach() + self.lora_buffer_v.detach())[:, :rank]
-            fisher_scores_k = self._project_fisher_scores(self.fisher_k, self.lora_basis_k.detach(), coeff_k, rank)
-            fisher_scores_v = self._project_fisher_scores(self.fisher_v, self.lora_basis_v.detach(), coeff_v, rank)
+            fisher_scores_k = self._directional_sensitivity_scores(self.fisher_k, self.lora_basis_k.detach(), rank)
+            fisher_scores_v = self._directional_sensitivity_scores(self.fisher_v, self.lora_basis_v.detach(), rank)
 
             self.importance_k[:rank].mul_(decay).add_(fisher_scores_k, alpha=1.0 - decay)
             self.importance_v[:rank].mul_(decay).add_(fisher_scores_v, alpha=1.0 - decay)
+            self.importance_max_k[:rank] = torch.maximum(self.importance_max_k[:rank], fisher_scores_k)
+            self.importance_max_v[:rank] = torch.maximum(self.importance_max_v[:rank], fisher_scores_v)
 
-    def _project_fisher_scores(self, fisher, basis, coeff, rank):
+            floor_frac = max(0.0, float(floor_frac))
+            if floor_frac > 0.0:
+                self.importance_k[:rank] = torch.maximum(
+                    self.importance_k[:rank], floor_frac * self.importance_max_k[:rank]
+                )
+                self.importance_v[:rank] = torch.maximum(
+                    self.importance_v[:rank], floor_frac * self.importance_max_v[:rank]
+                )
+
+    def _directional_sensitivity_scores(self, fisher, basis, rank):
         if rank <= 0:
             return torch.zeros(0, device=fisher.device)
-        coeff_sq = coeff[:, :rank].pow(2)
-        basis_sq = basis[:rank].pow(2)
-        return torch.einsum("ij,ir,rj->r", fisher, coeff_sq, basis_sq)
+        proj = torch.matmul(fisher, basis[:rank].t())
+        scores = torch.sum(proj.pow(2), dim=0)
+        return torch.nan_to_num(scores, nan=0.0, posinf=1e6, neginf=0.0)
 
-    def regularization_loss(self, device):
+    def regularization_loss(
+        self,
+        device,
+        historical_rank=None,
+        lambda_min=0.0,
+        alpha=1.0,
+        weight_power=1.0,
+        weight_cap=0.0,
+        new_dir_weight=0.0,
+    ):
         rank = self.active_rank
         if rank == 0:
             return torch.tensor(0.0, device=device)
 
+        historical_rank = rank if historical_rank is None else max(0, min(int(historical_rank), rank))
+        lambda_min = max(0.0, float(lambda_min))
+        alpha = max(0.0, float(alpha))
+        weight_power = max(0.0, float(weight_power))
+        weight_cap = max(0.0, float(weight_cap))
+        new_dir_weight = max(0.0, float(new_dir_weight))
+
         coeff_k = self.lora_buffer_k[:, :rank]
         coeff_v = self.lora_buffer_v[:, :rank]
-        importance_k = self.importance_k[:rank].detach().to(device)
-        importance_v = self.importance_v[:rank].detach().to(device)
-        penalty_k = (coeff_k.pow(2).sum(dim=0) * importance_k).sum()
-        penalty_v = (coeff_v.pow(2).sum(dim=0) * importance_v).sum()
+        importance_k = self.importance_k[:rank].detach().to(device).clamp(min=0.0)
+        importance_v = self.importance_v[:rank].detach().to(device).clamp(min=0.0)
+
+        penalty_k = self._branch_regularization(
+            coeff_k,
+            importance_k,
+            historical_rank,
+            lambda_min=lambda_min,
+            alpha=alpha,
+            weight_power=weight_power,
+            weight_cap=weight_cap,
+            new_dir_weight=new_dir_weight,
+        )
+        penalty_v = self._branch_regularization(
+            coeff_v,
+            importance_v,
+            historical_rank,
+            lambda_min=lambda_min,
+            alpha=alpha,
+            weight_power=weight_power,
+            weight_cap=weight_cap,
+            new_dir_weight=new_dir_weight,
+        )
         return 0.5 * (penalty_k + penalty_v)
+
+    def _branch_regularization(
+        self,
+        coeff,
+        importance,
+        historical_rank,
+        lambda_min,
+        alpha,
+        weight_power,
+        weight_cap,
+        new_dir_weight,
+    ):
+        energy = coeff.pow(2).sum(dim=0)
+        penalty = torch.tensor(0.0, device=coeff.device, dtype=coeff.dtype)
+
+        if historical_rank > 0:
+            old_importance = importance[:historical_rank]
+            old_mean = torch.mean(old_importance) + 1e-12
+            norm_importance = (old_importance / old_mean).pow(weight_power)
+            if weight_cap > 0.0:
+                norm_importance = torch.clamp(norm_importance, max=weight_cap)
+            strength = lambda_min + alpha * norm_importance
+            penalty = penalty + torch.sum(strength * energy[:historical_rank])
+
+        if historical_rank < energy.numel() and new_dir_weight > 0.0:
+            penalty = penalty + new_dir_weight * torch.sum(energy[historical_rank:])
+
+        return penalty
 
     def init_fisher_storage(self):
         return [torch.zeros_like(self.fisher_k), torch.zeros_like(self.fisher_v)]

@@ -175,10 +175,28 @@ class Net(nn.Module):
 
         return torch.cat(logits, dim=1)
 
-    def directional_regularization(self, device):
+    def directional_regularization(
+        self,
+        device,
+        historical_rank_map=None,
+        lambda_min=0.0,
+        alpha=1.0,
+        weight_power=1.0,
+        weight_cap=0.0,
+        new_dir_weight=0.0,
+    ):
         penalty = torch.tensor(0.0, device=device)
-        for module in self.iter_attention_modules():
-            penalty = penalty + module.regularization_loss(device)
+        for module_idx, module in enumerate(self.iter_attention_modules()):
+            historical_rank = None if historical_rank_map is None else historical_rank_map.get(module_idx)
+            penalty = penalty + module.regularization_loss(
+                device,
+                historical_rank=historical_rank,
+                lambda_min=lambda_min,
+                alpha=alpha,
+                weight_power=weight_power,
+                weight_cap=weight_cap,
+                new_dir_weight=new_dir_weight,
+            )
         return penalty
 
     def consolidate_task(
@@ -202,10 +220,10 @@ class Net(nn.Module):
                 gate_stats.append(stats)
         return gate_stats
 
-    def update_importance(self, fisher_values, decay):
+    def update_importance(self, fisher_values, decay, floor_frac=0.0):
         idx = 0
         for module in self.iter_attention_modules():
-            module.update_importance(fisher_values[idx], fisher_values[idx + 1], decay)
+            module.update_importance(fisher_values[idx], fisher_values[idx + 1], decay, floor_frac=floor_frac)
             idx += 2
 
     def collect_direction_stats(self, max_rank_map=None):

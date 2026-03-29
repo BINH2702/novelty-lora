@@ -42,6 +42,12 @@ class DirectionalLoRA(BaseLearner):
         self.mtl_enabled = _as_bool(args.get("mtl_enabled", False), default=False)
         self.mtl_strategy = str(args.get("mtl_strategy", "pcgrad")).lower()
         self.mtl_eps = _as_float(args.get("mtl_eps", 1e-12), default=1e-12)
+        self.reg_lambda_min = max(0.0, _as_float(args.get("reg_lambda_min", 0.2), default=0.2))
+        self.reg_alpha = max(0.0, _as_float(args.get("reg_alpha", 1.0), default=1.0))
+        self.reg_w_tau = max(0.0, _as_float(args.get("reg_w_tau", 0.5), default=0.5))
+        self.reg_w_max = max(0.0, _as_float(args.get("reg_w_max", 5.0), default=5.0))
+        self.reg_new_dir_weight = max(0.0, _as_float(args.get("reg_new_dir_weight", 0.05), default=0.05))
+        self.importance_floor_frac = max(0.0, _as_float(args.get("importance_floor_frac", 0.3), default=0.3))
 
         self.count_updates = 0
         self._historical_rank_snapshot = None
@@ -96,7 +102,15 @@ class DirectionalLoRA(BaseLearner):
                 loss_reg = None
                 if self.count_updates > 0:
                     model_ref = self._unwrap_model()
-                    loss_reg = self.reg_weight * model_ref.directional_regularization(self.device)
+                    loss_reg = self.reg_weight * model_ref.directional_regularization(
+                        self.device,
+                        historical_rank_map=self._historical_rank_snapshot,
+                        lambda_min=self.reg_lambda_min,
+                        alpha=self.reg_alpha,
+                        weight_power=self.reg_w_tau,
+                        weight_cap=self.reg_w_max,
+                        new_dir_weight=self.reg_new_dir_weight,
+                    )
 
                 if self.mtl_enabled and self.count_updates > 0 and loss_reg is not None:
                     total_loss = self._apply_mtl_step(loss_new, loss_reg, optimizer)
@@ -294,7 +308,11 @@ class DirectionalLoRA(BaseLearner):
         )
         fisher_values = fisher.compute(max_batches=max_batches)
         with torch.no_grad():
-            self.network.update_importance(fisher_values, self.importance_decay)
+            self.network.update_importance(
+                fisher_values,
+                self.importance_decay,
+                floor_frac=self.importance_floor_frac,
+            )
 
     def _run_pretraining_diagnostics(self):
         old_loader = self._build_old_task_loader()

@@ -28,6 +28,12 @@
     "importance_decay" : 0.9,
     "lambda" : 1000.0,
     "novelty_threshold" : 0.15,
+    "reg_lambda_min" : 0.2,
+    "reg_alpha" : 1.0,
+    "reg_w_tau" : 0.5,
+    "reg_w_max" : 5.0,
+    "reg_new_dir_weight" : 0.05,
+    "importance_floor_frac" : 0.3,
 
     "diag_enabled" : false,
     "diag_topk" : 3,
@@ -41,3 +47,4 @@
     "mtl_strategy" : "pcgrad",
     "mtl_eps" : 1e-12
 }
+
