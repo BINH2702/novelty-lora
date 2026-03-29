@@ -7,3 +7,6 @@ wandb/
 scripts/
 seed0/
 refined_proposal_from_txt.md
+NIPS_2026_Agentic_AI.pdf
+NIPS_2026_alignment_and_soundness_notes.md
+run_seed

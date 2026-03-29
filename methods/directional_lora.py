@@ -33,6 +33,8 @@ class DirectionalLoRA(BaseLearner):
         self.diag_topk = args.get("diag_topk", 3)
         self.diag_perturb_scale = args.get("diag_perturb_scale", 0.1)
         self.diag_old_new_split = args.get("diag_old_new_split", True)
+        self.fisher_max_batches = _as_optional_int(args.get("fisher_max_batches"), default=None)
+        self.skip_importance_update = _as_bool(args.get("skip_importance_update", False), default=False)
         gate_flag = args.get("conflict_gate_enabled", args.get("conflict_gate", False))
         self.conflict_gate_enabled = _as_bool(gate_flag, default=False)
         self.conflict_gate_strength = _as_float(args.get("conflict_gate_strength", 0.5), default=0.5)
@@ -219,6 +221,13 @@ class DirectionalLoRA(BaseLearner):
             )
 
     def _update_importance(self):
+        if self.skip_importance_update:
+            return
+
+        max_batches = self.fisher_max_batches
+        if self.debug:
+            max_batches = 1 if max_batches is None else min(max_batches, 1)
+
         fisher = FisherComputer(
             self.network,
             self.train_loader,
@@ -226,7 +235,7 @@ class DirectionalLoRA(BaseLearner):
             F.cross_entropy,
             self.device,
         )
-        fisher_values = fisher.compute(max_batches=None if not self.debug else 1)
+        fisher_values = fisher.compute(max_batches=max_batches)
         with torch.no_grad():
             self.network.update_importance(fisher_values, self.importance_decay)
 
@@ -551,6 +560,16 @@ def _as_float(value, default=0.0):
         return float(value)
     except (TypeError, ValueError):
         return float(default)
+
+
+def _as_optional_int(value, default=None):
+    if value is None:
+        return default
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        return default
+    return parsed if parsed > 0 else default
 
 
 def _top_bottom_summary(stats, topk):
