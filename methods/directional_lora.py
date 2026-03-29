@@ -227,7 +227,8 @@ class DirectionalLoRA(BaseLearner):
             self.device,
         )
         fisher_values = fisher.compute(max_batches=None if not self.debug else 1)
-        self.network.update_importance(fisher_values, self.importance_decay)
+        with torch.no_grad():
+            self.network.update_importance(fisher_values, self.importance_decay)
 
     def _run_pretraining_diagnostics(self):
         old_loader = self._build_old_task_loader()

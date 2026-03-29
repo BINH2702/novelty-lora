@@ -228,50 +228,51 @@ class AttentionDirectionalLoRA(nn.Module):
         conflict_gate_strength=0.0,
         conflict_gate_floor=0.0,
     ):
-        rank = self.active_rank
-        historical_rank = rank if historical_rank is None else max(0, min(int(historical_rank), rank))
-        conflict_gate_floor = max(0.0, min(float(conflict_gate_floor), 1.0))
-        conflict_gate_strength = max(0.0, float(conflict_gate_strength))
+        with torch.no_grad():
+            rank = self.active_rank
+            historical_rank = rank if historical_rank is None else max(0, min(int(historical_rank), rank))
+            conflict_gate_floor = max(0.0, min(float(conflict_gate_floor), 1.0))
+            conflict_gate_strength = max(0.0, float(conflict_gate_strength))
 
-        gate_stats = None
-        if historical_rank < rank and conflict_gate_strength > 0.0:
-            gates_k, stats_k = self._compute_new_rank_gates(
-                self.lora_memory_k,
-                self.lora_buffer_k,
-                self.lora_basis_k,
-                self.importance_k,
-                historical_rank,
-                rank,
-                conflict_gate_strength,
-                conflict_gate_floor,
-            )
-            gates_v, stats_v = self._compute_new_rank_gates(
-                self.lora_memory_v,
-                self.lora_buffer_v,
-                self.lora_basis_v,
-                self.importance_v,
-                historical_rank,
-                rank,
-                conflict_gate_strength,
-                conflict_gate_floor,
-            )
-            self.lora_buffer_k.data[:, historical_rank:rank].mul_(gates_k.unsqueeze(0))
-            self.lora_buffer_v.data[:, historical_rank:rank].mul_(gates_v.unsqueeze(0))
+            gate_stats = None
+            if historical_rank < rank and conflict_gate_strength > 0.0:
+                gates_k, stats_k = self._compute_new_rank_gates(
+                    self.lora_memory_k,
+                    self.lora_buffer_k,
+                    self.lora_basis_k,
+                    self.importance_k,
+                    historical_rank,
+                    rank,
+                    conflict_gate_strength,
+                    conflict_gate_floor,
+                )
+                gates_v, stats_v = self._compute_new_rank_gates(
+                    self.lora_memory_v,
+                    self.lora_buffer_v,
+                    self.lora_basis_v,
+                    self.importance_v,
+                    historical_rank,
+                    rank,
+                    conflict_gate_strength,
+                    conflict_gate_floor,
+                )
+                self.lora_buffer_k.data[:, historical_rank:rank].mul_(gates_k.unsqueeze(0))
+                self.lora_buffer_v.data[:, historical_rank:rank].mul_(gates_v.unsqueeze(0))
 
-            gate_stats = {
-                "historical_rank": int(historical_rank),
-                "active_rank": int(rank),
-                "gate_k": stats_k,
-                "gate_v": stats_v,
-            }
+                gate_stats = {
+                    "historical_rank": int(historical_rank),
+                    "active_rank": int(rank),
+                    "gate_k": stats_k,
+                    "gate_v": stats_v,
+                }
 
-        self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
-        self.lora_memory_v.data[:, :rank] += gamma * self.lora_buffer_v.data[:, :rank]
-        self.lora_buffer_k.data.zero_()
-        self.lora_buffer_v.data.zero_()
-        if self.active_rank > self.rank_budget:
-            self._prune()
-        return gate_stats
+            self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
+            self.lora_memory_v.data[:, :rank] += gamma * self.lora_buffer_v.data[:, :rank]
+            self.lora_buffer_k.data.zero_()
+            self.lora_buffer_v.data.zero_()
+            if self.active_rank > self.rank_budget:
+                self._prune()
+            return gate_stats
 
     def _prune(self):
         utility_k = self.importance_k[: self.active_rank] + torch.linalg.norm(
@@ -305,17 +306,18 @@ class AttentionDirectionalLoRA(nn.Module):
         self._orthonormalize_basis(self.lora_basis_v, self.active_rank)
 
     def update_importance(self, fisher_k, fisher_v, decay):
-        self.fisher_k.copy_(fisher_k.to(self.fisher_k.device))
-        self.fisher_v.copy_(fisher_v.to(self.fisher_v.device))
+        with torch.no_grad():
+            self.fisher_k.copy_(fisher_k.to(self.fisher_k.device))
+            self.fisher_v.copy_(fisher_v.to(self.fisher_v.device))
 
-        rank = self.active_rank
-        coeff_k = (self.lora_memory_k + self.lora_buffer_k)[:, :rank]
-        coeff_v = (self.lora_memory_v + self.lora_buffer_v)[:, :rank]
-        fisher_scores_k = self._project_fisher_scores(self.fisher_k, self.lora_basis_k, coeff_k, rank)
-        fisher_scores_v = self._project_fisher_scores(self.fisher_v, self.lora_basis_v, coeff_v, rank)
+            rank = self.active_rank
+            coeff_k = (self.lora_memory_k.detach() + self.lora_buffer_k.detach())[:, :rank]
+            coeff_v = (self.lora_memory_v.detach() + self.lora_buffer_v.detach())[:, :rank]
+            fisher_scores_k = self._project_fisher_scores(self.fisher_k, self.lora_basis_k.detach(), coeff_k, rank)
+            fisher_scores_v = self._project_fisher_scores(self.fisher_v, self.lora_basis_v.detach(), coeff_v, rank)
 
-        self.importance_k[:rank].mul_(decay).add_(fisher_scores_k, alpha=1.0 - decay)
-        self.importance_v[:rank].mul_(decay).add_(fisher_scores_v, alpha=1.0 - decay)
+            self.importance_k[:rank].mul_(decay).add_(fisher_scores_k, alpha=1.0 - decay)
+            self.importance_v[:rank].mul_(decay).add_(fisher_scores_v, alpha=1.0 - decay)
 
     def _project_fisher_scores(self, fisher, basis, coeff, rank):
         if rank <= 0:
@@ -331,8 +333,10 @@ class AttentionDirectionalLoRA(nn.Module):
 
         coeff_k = self.lora_buffer_k[:, :rank]
         coeff_v = self.lora_buffer_v[:, :rank]
-        penalty_k = (coeff_k.pow(2).sum(dim=0) * self.importance_k[:rank].to(device)).sum()
-        penalty_v = (coeff_v.pow(2).sum(dim=0) * self.importance_v[:rank].to(device)).sum()
+        importance_k = self.importance_k[:rank].detach().to(device)
+        importance_v = self.importance_v[:rank].detach().to(device)
+        penalty_k = (coeff_k.pow(2).sum(dim=0) * importance_k).sum()
+        penalty_v = (coeff_v.pow(2).sum(dim=0) * importance_v).sum()
         return 0.5 * (penalty_k + penalty_v)
 
     def init_fisher_storage(self):
