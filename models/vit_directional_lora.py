@@ -74,12 +74,16 @@ class AttentionDirectionalLoRA(nn.Module):
         q, _ = torch.linalg.qr(basis[:rank].data.t(), mode="reduced")
         basis[:rank].data.copy_(q.t())
 
-    def _delta_weight(self, basis, memory, buffer, use_buffer, rank_limit=None):
+    def _delta_weight(self, basis, memory, buffer, use_buffer, rank_limit=None, rank_window=None):
         rank = self.active_rank if rank_limit is None else min(self.active_rank, rank_limit)
-        coeff = memory[:, :rank]
+        start, end = (0, rank) if rank_window is None else rank_window
+        start = max(0, min(start, rank))
+        end = max(start, min(end, rank))
+
+        coeff = memory[:, start:end]
         if use_buffer:
-            coeff = coeff + buffer[:, :rank]
-        return coeff @ basis[:rank, :]
+            coeff = coeff + buffer[:, start:end]
+        return coeff @ basis[start:end, :]
 
     def _grow_basis(self, basis, memory, buffer, importance, grad, grow_rank, threshold):
         grad_norm = torch.linalg.norm(grad)
@@ -139,6 +143,27 @@ class AttentionDirectionalLoRA(nn.Module):
             self.qkv.bias.grad = None
         return 0.5 * (novelty_k + novelty_v)
 
+    def apply_accumulated_warmup_gradient(self, grad_k, grad_v, grow_rank, threshold):
+        novelty_k = self._grow_basis(
+            self.lora_basis_k,
+            self.lora_memory_k,
+            self.lora_buffer_k,
+            self.importance_k,
+            grad_k,
+            grow_rank,
+            threshold,
+        )
+        novelty_v = self._grow_basis(
+            self.lora_basis_v,
+            self.lora_memory_v,
+            self.lora_buffer_v,
+            self.importance_v,
+            grad_v,
+            grow_rank,
+            threshold,
+        )
+        return 0.5 * (novelty_k + novelty_v)
+
     def consolidate_task(self, gamma):
         rank = self.active_rank
         self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
@@ -184,18 +209,20 @@ class AttentionDirectionalLoRA(nn.Module):
         self.fisher_v.copy_(fisher_v.to(self.fisher_v.device))
 
         rank = self.active_rank
-        fisher_scores_k = self._project_fisher_scores(self.fisher_k, self.lora_basis_k, rank)
-        fisher_scores_v = self._project_fisher_scores(self.fisher_v, self.lora_basis_v, rank)
+        coeff_k = (self.lora_memory_k + self.lora_buffer_k)[:, :rank]
+        coeff_v = (self.lora_memory_v + self.lora_buffer_v)[:, :rank]
+        fisher_scores_k = self._project_fisher_scores(self.fisher_k, self.lora_basis_k, coeff_k, rank)
+        fisher_scores_v = self._project_fisher_scores(self.fisher_v, self.lora_basis_v, coeff_v, rank)
 
         self.importance_k[:rank].mul_(decay).add_(fisher_scores_k, alpha=1.0 - decay)
         self.importance_v[:rank].mul_(decay).add_(fisher_scores_v, alpha=1.0 - decay)
 
-    def _project_fisher_scores(self, fisher, basis, rank):
+    def _project_fisher_scores(self, fisher, basis, coeff, rank):
         if rank <= 0:
             return torch.zeros(0, device=fisher.device)
-        basis_sq = basis[:rank] ** 2
-        fisher_mean = fisher.mean(dim=0, keepdim=True)
-        return (basis_sq * fisher_mean).sum(dim=1)
+        coeff_sq = coeff[:, :rank].pow(2)
+        basis_sq = basis[:rank].pow(2)
+        return torch.einsum("ij,ir,rj->r", fisher, coeff_sq, basis_sq)
 
     def regularization_loss(self, device):
         rank = self.active_rank
@@ -248,7 +275,7 @@ class AttentionDirectionalLoRA(nn.Module):
                 )
         return stats
 
-    def forward(self, x, use_buffer=True, register_hook=False, rank_limit=None):
+    def forward(self, x, use_buffer=True, register_hook=False, rank_limit=None, rank_window=None):
         bsz, seq_len, channels = x.shape
         qkv = self.qkv(x)
 
@@ -258,6 +285,7 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_buffer_k,
             use_buffer,
             rank_limit=rank_limit,
+            rank_window=rank_window,
         )
         delta_v = self._delta_weight(
             self.lora_basis_v,
@@ -265,14 +293,18 @@ class AttentionDirectionalLoRA(nn.Module):
             self.lora_buffer_v,
             use_buffer,
             rank_limit=rank_limit,
+            rank_window=rank_window,
         )
         qkv[:, :, self.dim : 2 * self.dim] += x @ delta_k.t()
         qkv[:, :, 2 * self.dim :] += x @ delta_v.t()
 
         if use_buffer and register_hook:
             limit = self.active_rank if rank_limit is None else min(self.active_rank, rank_limit)
-            delta_buf_k = self.lora_buffer_k[:, :limit] @ self.lora_basis_k[:limit, :]
-            delta_buf_v = self.lora_buffer_v[:, :limit] @ self.lora_basis_v[:limit, :]
+            start, end = (0, limit) if rank_window is None else rank_window
+            start = max(0, min(start, limit))
+            end = max(start, min(end, limit))
+            delta_buf_k = self.lora_buffer_k[:, start:end] @ self.lora_basis_k[start:end, :]
+            delta_buf_v = self.lora_buffer_v[:, start:end] @ self.lora_basis_v[start:end, :]
             delta_buf_k.register_hook(self.save_grad("delta_w_k_grad"))
             delta_buf_v.register_hook(self.save_grad("delta_w_v_grad"))
 
@@ -329,9 +361,17 @@ class Block(nn.Module):
         self.ls2 = LayerScale(dim, init_values=init_values) if init_values else nn.Identity()
         self.drop_path2 = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
 
-    def forward(self, x, use_buffer=True, register_hook=False, rank_limit=None):
+    def forward(self, x, use_buffer=True, register_hook=False, rank_limit=None, rank_window=None):
         x = x + self.drop_path1(
-            self.ls1(self.attn(self.norm1(x), use_buffer=use_buffer, register_hook=register_hook, rank_limit=rank_limit))
+            self.ls1(
+                self.attn(
+                    self.norm1(x),
+                    use_buffer=use_buffer,
+                    register_hook=register_hook,
+                    rank_limit=rank_limit,
+                    rank_window=rank_window,
+                )
+            )
         )
         x = x + self.drop_path2(self.ls2(self.mlp(self.norm2(x))))
         return x

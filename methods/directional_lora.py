@@ -27,13 +27,16 @@ class DirectionalLoRA(BaseLearner):
         self.novelty_threshold = args["novelty_threshold"]
         self.grow_rank = args.get("grow_rank", 1)
         self.warmup_batches = args.get("warmup_batches", 1)
+        self.basis_growth_batches = args.get("basis_growth_batches", max(self.warmup_batches, 10))
 
         self.diag_enabled = args.get("diag_enabled", True)
         self.diag_topk = args.get("diag_topk", 3)
         self.diag_perturb_scale = args.get("diag_perturb_scale", 0.1)
+        self.diag_old_new_split = args.get("diag_old_new_split", True)
 
         self.count_updates = 0
         self._historical_rank_snapshot = None
+        self._postgrow_rank_snapshot = None
         self._pretrain_old_metrics = None
 
     def _train(self, train_loader):
@@ -48,6 +51,7 @@ class DirectionalLoRA(BaseLearner):
 
         with torch.enable_grad():
             self._warmup_and_expand_basis(train_loader)
+        self._postgrow_rank_snapshot = self.network.get_active_ranks()
 
         encoder_params = self.network.image_encoder.parameters()
         cls_params = [p for p in self.network.classifier_pool.parameters() if p.requires_grad]
@@ -128,6 +132,7 @@ class DirectionalLoRA(BaseLearner):
     def _warmup_and_expand_basis(self, train_loader):
         self.network.zero_grad()
         self.network.train()
+        modules = list(self.network.iter_attention_modules())
 
         saved_flags = {}
         for name, param in self.network.named_parameters():
@@ -143,7 +148,10 @@ class DirectionalLoRA(BaseLearner):
             param.requires_grad_(True)
 
         batches_used = 0
-        novelty_scores = []
+        grad_sums = [
+            {"module": module, "grad_k": None, "grad_v": None, "count": 0}
+            for module in modules
+        ]
         for _, inputs, targets in train_loader:
             inputs, targets = inputs.to(self.device), targets.to(self.device)
             mask = (targets >= self.known_classes).nonzero().view(-1)
@@ -156,23 +164,44 @@ class DirectionalLoRA(BaseLearner):
             loss = F.cross_entropy(logits, targets)
             loss.backward()
 
-            for module in self.network.image_encoder.modules():
-                if hasattr(module, "apply_warmup_gradient"):
-                    novelty_scores.append(module.apply_warmup_gradient(self.grow_rank, self.novelty_threshold))
+            for slot in grad_sums:
+                module = slot["module"]
+                if module.qkv.weight.grad is None:
+                    continue
+                grad = module.qkv.weight.grad.detach()
+                grad_k = grad[module.dim : 2 * module.dim].clone()
+                grad_v = grad[2 * module.dim :].clone()
+                slot["grad_k"] = grad_k if slot["grad_k"] is None else slot["grad_k"] + grad_k
+                slot["grad_v"] = grad_v if slot["grad_v"] is None else slot["grad_v"] + grad_v
+                slot["count"] += 1
 
             batches_used += 1
             self.network.zero_grad()
-            if self.debug or batches_used >= self.warmup_batches:
+            if self.debug or batches_used >= self.basis_growth_batches:
                 break
 
         for name, param in self.network.named_parameters():
             param.requires_grad_(saved_flags[name])
 
+        novelty_scores = []
+        for slot in grad_sums:
+            if slot["count"] == 0:
+                continue
+            novelty_scores.append(
+                slot["module"].apply_accumulated_warmup_gradient(
+                    slot["grad_k"] / slot["count"],
+                    slot["grad_v"] / slot["count"],
+                    self.grow_rank,
+                    self.novelty_threshold,
+                )
+            )
+
         if novelty_scores:
             logging.info(
-                "Task %s warm-up novelty mean %.4f",
+                "Task %s warm-up novelty mean %.4f over %s batches",
                 self.cur_task,
                 float(sum(novelty_scores) / len(novelty_scores)),
+                batches_used,
             )
 
     def _update_importance(self):
@@ -229,16 +258,7 @@ class DirectionalLoRA(BaseLearner):
         baseline_acc = self._pretrain_old_metrics["acc"]
 
         full_metrics = self._evaluate_old_tasks(old_loader, use_buffer=True)
-        tracked_metrics = self._evaluate_old_tasks(
-            old_loader,
-            use_buffer=True,
-            rank_limits=self._historical_rank_snapshot,
-        )
-
-        full_loss_delta = full_metrics["loss"] - baseline_loss
-        tracked_loss_delta = tracked_metrics["loss"] - baseline_loss
-        full_acc_drop = baseline_acc - full_metrics["acc"]
-        tracked_acc_drop = baseline_acc - tracked_metrics["acc"]
+        tracked_metrics = self._evaluate_old_tasks(old_loader, use_buffer=True, rank_limits=self._historical_rank_snapshot)
 
         payload = {
             "task": self.cur_task,
@@ -249,9 +269,51 @@ class DirectionalLoRA(BaseLearner):
             "old_task_acc_before": baseline_acc,
             "old_task_acc_full": full_metrics["acc"],
             "old_task_acc_tracked_only": tracked_metrics["acc"],
-            "fraction_forgetting_explained_loss": _safe_fraction(tracked_loss_delta, full_loss_delta),
-            "fraction_forgetting_explained_acc": _safe_fraction(tracked_acc_drop, full_acc_drop),
         }
+
+        full_loss_delta = full_metrics["loss"] - baseline_loss
+        tracked_loss_delta = tracked_metrics["loss"] - baseline_loss
+        full_acc_drop = baseline_acc - full_metrics["acc"]
+        tracked_acc_drop = baseline_acc - tracked_metrics["acc"]
+
+        payload["fraction_forgetting_explained_loss"] = _safe_fraction(tracked_loss_delta, full_loss_delta)
+        payload["fraction_forgetting_explained_acc"] = _safe_fraction(tracked_acc_drop, full_acc_drop)
+
+        if self.diag_old_new_split and self._historical_rank_snapshot is not None and self._postgrow_rank_snapshot is not None:
+            old_windows = self._build_rank_windows(self._historical_rank_snapshot, self._historical_rank_snapshot)
+            new_windows = self._build_rank_windows(self._historical_rank_snapshot, self._postgrow_rank_snapshot)
+
+            old_only_metrics = self._evaluate_old_tasks(
+                old_loader,
+                use_buffer=True,
+                rank_windows=old_windows,
+            )
+            new_only_metrics = self._evaluate_old_tasks(
+                old_loader,
+                use_buffer=True,
+                rank_windows=new_windows,
+            )
+
+            old_only_loss_delta = old_only_metrics["loss"] - baseline_loss
+            new_only_loss_delta = new_only_metrics["loss"] - baseline_loss
+            old_only_acc_drop = baseline_acc - old_only_metrics["acc"]
+            new_only_acc_drop = baseline_acc - new_only_metrics["acc"]
+
+            payload.update(
+                {
+                    "old_task_loss_old_only": old_only_metrics["loss"],
+                    "old_task_loss_new_only": new_only_metrics["loss"],
+                    "old_task_acc_old_only": old_only_metrics["acc"],
+                    "old_task_acc_new_only": new_only_metrics["acc"],
+                    "old_only_loss_delta": old_only_loss_delta,
+                    "new_only_loss_delta": new_only_loss_delta,
+                    "old_only_acc_drop": old_only_acc_drop,
+                    "new_only_acc_drop": new_only_acc_drop,
+                    "interaction_loss_delta": full_loss_delta - old_only_loss_delta - new_only_loss_delta,
+                    "interaction_acc_drop": full_acc_drop - old_only_acc_drop - new_only_acc_drop,
+                }
+            )
+
         self._record_diagnostics(payload)
 
     def _build_old_task_loader(self):
@@ -261,7 +323,7 @@ class DirectionalLoRA(BaseLearner):
         dataset = self.data_manager.get_dataset(old_classes, source="test", mode="test")
         return DataLoader(dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
-    def _evaluate_old_tasks(self, loader, use_buffer, rank_limits=None):
+    def _evaluate_old_tasks(self, loader, use_buffer, rank_limits=None, rank_windows=None):
         self.network.eval()
         total_loss = 0.0
         total_correct = 0
@@ -276,6 +338,7 @@ class DirectionalLoRA(BaseLearner):
                     inputs,
                     use_buffer=use_buffer,
                     rank_limits=rank_limits,
+                    rank_windows=rank_windows,
                     max_task=self.cur_task - 1,
                 )
                 loss = F.cross_entropy(outputs, targets, reduction="sum")
@@ -290,6 +353,13 @@ class DirectionalLoRA(BaseLearner):
         if total_samples == 0:
             return {"loss": 0.0, "acc": 0.0}
         return {"loss": total_loss / total_samples, "acc": 100.0 * total_correct / total_samples}
+
+    def _build_rank_windows(self, start_ranks, end_ranks):
+        windows = {}
+        for layer_idx, end_rank in end_ranks.items():
+            start_rank = min(start_ranks.get(layer_idx, 0), end_rank)
+            windows[layer_idx] = (start_rank, end_rank)
+        return windows
 
     def _measure_direction_sensitivity(self, loader, stat, epsilon, baseline):
         module = self.network.get_attention_module(stat["module_index"])

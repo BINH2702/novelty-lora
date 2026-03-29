@@ -83,7 +83,7 @@ class ViT(VisionTransformer):
             rank=rank,
         )
 
-    def forward(self, x, use_buffer=True, register_hook=False, rank_limits=None):
+    def forward(self, x, use_buffer=True, register_hook=False, rank_limits=None, rank_windows=None):
         x = self.patch_embed(x)
         x = torch.cat((self.cls_token.expand(x.shape[0], -1, -1), x), dim=1)
         x = x + self.pos_embed[:, : x.size(1), :]
@@ -91,7 +91,14 @@ class ViT(VisionTransformer):
 
         for blk_idx, blk in enumerate(self.blocks):
             layer_limit = None if rank_limits is None else rank_limits.get(blk_idx)
-            x = blk(x, use_buffer=use_buffer, register_hook=register_hook, rank_limit=layer_limit)
+            layer_window = None if rank_windows is None else rank_windows.get(blk_idx)
+            x = blk(
+                x,
+                use_buffer=use_buffer,
+                register_hook=register_hook,
+                rank_limit=layer_limit,
+                rank_window=layer_window,
+            )
 
         x = self.norm(x)
         return x
@@ -132,7 +139,7 @@ class Net(nn.Module):
     def feature_dim(self):
         return self.image_encoder.out_dim
 
-    def forward(self, image, use_buffer=True, fc_only=False, register_hook=False, rank_limits=None):
+    def forward(self, image, use_buffer=True, fc_only=False, register_hook=False, rank_limits=None, rank_windows=None):
         if fc_only:
             fc_outs = []
             for ti in range(self._cur_task + 1):
@@ -144,15 +151,21 @@ class Net(nn.Module):
             use_buffer=use_buffer,
             register_hook=register_hook,
             rank_limits=rank_limits,
+            rank_windows=rank_windows,
         )
         image_features = image_features[:, 0, :]
         image_features = image_features.view(image_features.size(0), -1)
         logits = self.classifier_pool[self._cur_task](image_features)
         return {"logits": logits, "features": image_features}
 
-    def interface(self, image, use_buffer=True, rank_limits=None, max_task=None):
+    def interface(self, image, use_buffer=True, rank_limits=None, rank_windows=None, max_task=None):
         logits = []
-        image_features = self.image_encoder(image, use_buffer=use_buffer, rank_limits=rank_limits)
+        image_features = self.image_encoder(
+            image,
+            use_buffer=use_buffer,
+            rank_limits=rank_limits,
+            rank_windows=rank_windows,
+        )
         image_features = image_features[:, 0, :]
         image_features = image_features.view(image_features.size(0), -1)
 

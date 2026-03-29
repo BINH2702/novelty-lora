@@ -3,3 +3,7 @@ __pycache__/
  *.py[cod]     
 data/
 logs/
+wandb/
+scripts/
+seed0/
+refined_proposal_from_txt.md
