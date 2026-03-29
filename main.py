@@ -30,7 +30,8 @@ def main():
 
 
 def load_json(settings_path):
-    with open(settings_path) as data_file:
+    # Use utf-8-sig so configs saved with BOM (common on Windows) load correctly.
+    with open(settings_path, encoding='utf-8-sig') as data_file:
         param = json.load(data_file)
 
     return param
