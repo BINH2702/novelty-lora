@@ -18,9 +18,9 @@
     "weight_decay" : 0.0,
     "batch_size" : 128,
 
-    "rank" : 10,
+    "rank" : 4,
     "rank_budget" : 10,
-    "max_rank" : 10,
+    "max_rank" : 20,
     "grow_rank" : 2,
     "warmup_batches" : 1,
     "basis_growth_batches" : 10,
