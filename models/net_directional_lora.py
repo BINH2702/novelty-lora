@@ -184,6 +184,7 @@ class Net(nn.Module):
         weight_power=1.0,
         weight_cap=0.0,
         new_dir_weight=0.0,
+        matrix_ewc_weight=0.0,
     ):
         penalty = torch.tensor(0.0, device=device)
         for module_idx, module in enumerate(self.iter_attention_modules()):
@@ -196,6 +197,7 @@ class Net(nn.Module):
                 weight_power=weight_power,
                 weight_cap=weight_cap,
                 new_dir_weight=new_dir_weight,
+                matrix_ewc_weight=matrix_ewc_weight,
             )
         return penalty
 

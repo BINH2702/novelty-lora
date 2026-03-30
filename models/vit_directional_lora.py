@@ -359,6 +359,7 @@ class AttentionDirectionalLoRA(nn.Module):
         weight_power=1.0,
         weight_cap=0.0,
         new_dir_weight=0.0,
+        matrix_ewc_weight=0.0,
     ):
         rank = self.active_rank
         if rank == 0:
@@ -370,6 +371,7 @@ class AttentionDirectionalLoRA(nn.Module):
         weight_power = max(0.0, float(weight_power))
         weight_cap = max(0.0, float(weight_cap))
         new_dir_weight = max(0.0, float(new_dir_weight))
+        matrix_ewc_weight = max(0.0, float(matrix_ewc_weight))
 
         coeff_k = self.lora_buffer_k[:, :rank]
         coeff_v = self.lora_buffer_v[:, :rank]
@@ -396,7 +398,17 @@ class AttentionDirectionalLoRA(nn.Module):
             weight_cap=weight_cap,
             new_dir_weight=new_dir_weight,
         )
-        return 0.5 * (penalty_k + penalty_v)
+        penalty = 0.5 * (penalty_k + penalty_v)
+
+        if matrix_ewc_weight > 0.0:
+            delta_k = coeff_k @ self.lora_basis_k[:rank, :]
+            delta_v = coeff_v @ self.lora_basis_v[:rank, :]
+            fisher_k = self.fisher_k.to(device=device, dtype=delta_k.dtype)
+            fisher_v = self.fisher_v.to(device=device, dtype=delta_v.dtype)
+            fisher_penalty = 0.5 * (torch.sum(fisher_k * delta_k.pow(2)) + torch.sum(fisher_v * delta_v.pow(2)))
+            penalty = penalty + matrix_ewc_weight * fisher_penalty
+
+        return penalty
 
     def _branch_regularization(
         self,

@@ -48,6 +48,8 @@ class DirectionalLoRA(BaseLearner):
         self.reg_w_max = max(0.0, _as_float(args.get("reg_w_max", 5.0), default=5.0))
         self.reg_new_dir_weight = max(0.0, _as_float(args.get("reg_new_dir_weight", 0.05), default=0.05))
         self.importance_floor_frac = max(0.0, _as_float(args.get("importance_floor_frac", 0.3), default=0.3))
+        self.reg_matrix_ewc_weight = max(0.0, _as_float(args.get("reg_matrix_ewc_weight", 0.0), default=0.0))
+        self.reg_task_growth = max(0.0, _as_float(args.get("reg_task_growth", 0.0), default=0.0))
 
         self.count_updates = 0
         self._historical_rank_snapshot = None
@@ -102,7 +104,8 @@ class DirectionalLoRA(BaseLearner):
                 loss_reg = None
                 if self.count_updates > 0:
                     model_ref = self._unwrap_model()
-                    loss_reg = self.reg_weight * model_ref.directional_regularization(
+                    reg_scale = self.reg_weight * (1.0 + self.reg_task_growth * float(max(self.cur_task, 0)))
+                    loss_reg = reg_scale * model_ref.directional_regularization(
                         self.device,
                         historical_rank_map=self._historical_rank_snapshot,
                         lambda_min=self.reg_lambda_min,
@@ -110,6 +113,7 @@ class DirectionalLoRA(BaseLearner):
                         weight_power=self.reg_w_tau,
                         weight_cap=self.reg_w_max,
                         new_dir_weight=self.reg_new_dir_weight,
+                        matrix_ewc_weight=self.reg_matrix_ewc_weight,
                     )
 
                 if self.mtl_enabled and self.count_updates > 0 and loss_reg is not None:
