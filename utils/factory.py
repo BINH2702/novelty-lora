@@ -6,6 +6,7 @@ from methods.cllora import CLLoRA       # https://arxiv.org/pdf/2505.24816
 from methods.ewclora import EWCLoRA
 from methods.novelty_lora import NoveltyLoRA
 from methods.directional_lora import DirectionalLoRA
+from methods.dir_fis_lora import DirFisLoRA
 
 
 def get_model(method, args):
@@ -17,6 +18,7 @@ def get_model(method, args):
                'ewclora': EWCLoRA,
                'novelty_lora': NoveltyLoRA,
                'directional_lora': DirectionalLoRA,
+               'dir_fis_lora': DirFisLoRA,
                }
     return options[name](args)
 

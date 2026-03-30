@@ -1,0 +1,46 @@
+﻿{
+    "seed" : [0],
+    "dataset" : "cifar100",
+    "data_path" : "data/cifar100",
+    "load" : "vit_base_patch16_224_in21k",
+
+    "init_cls" : 10,
+    "increment" : 10,
+    "sessions" : 10,
+    "shuffle" : false,
+
+    "method" : "dir_fis_lora",
+    "optimizer" : "adam",
+    "scheduler" : "cosine",
+    "epochs" : 20,
+    "lrate" : 0.0005,
+    "fc_lrate" : 0.005,
+    "weight_decay" : 0.0,
+    "batch_size" : 128,
+    "rank" : 4,
+
+    "max_rank" : 64,
+    "rank_budget" : 10,
+    "enforce_rank_budget" : false,
+
+    "grow_rank" : 2,
+    "warmup_batches" : 1,
+    "basis_growth_batches" : 10,
+    "num_workers" : 16,
+
+    "gamma" : 1.0,
+    "importance_decay" : 0.9,
+    "lambda" : 1000.0,
+    "novelty_threshold" : 0.15,
+
+    "reg_lambda_min" : 0.2,
+    "reg_alpha" : 1.0,
+    "reg_w_tau" : 0.5,
+    "reg_w_max" : 5.0,
+    "reg_new_dir_weight" : 0.05,
+    "importance_floor_frac" : 0.3,
+
+    "conflict_gate_enabled" : false,
+    "conflict_gate_strength" : 0.5,
+    "conflict_gate_floor" : 0.1
+}
