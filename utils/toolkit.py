@@ -51,11 +51,12 @@ def set_device(args):
     device_type = args['device']
     gpus = []
     for device in device_type:
-        if device_type == -1:
-            device = torch.device('cpu')
+        token = str(device).strip().lower()
+        if token in {'-1', 'cpu'}:
+            resolved = torch.device('cpu')
         else:
-            device = torch.device('cuda:{}'.format(device))
-        gpus.append(device)
+            resolved = torch.device('cuda:{}'.format(device))
+        gpus.append(resolved)
     args['device'] = gpus
 
 

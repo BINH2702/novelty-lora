@@ -80,6 +80,36 @@ class AttentionDirectionalLoRA(nn.Module):
         q, _ = torch.linalg.qr(basis[:rank].data.t(), mode="reduced")
         basis[:rank].data.copy_(q.t())
 
+    def _sample_random_dirs(self, count, basis):
+        if count <= 0:
+            return torch.zeros(0, basis.size(1), device=basis.device, dtype=basis.dtype)
+        rand_dirs = torch.randn(count, basis.size(1), device=basis.device, dtype=basis.dtype)
+        q, _ = torch.linalg.qr(rand_dirs.t(), mode="reduced")
+        return q.t()[:count]
+
+    def activate_provisional_directions(self, grow_rank):
+        add_rank = min(max(int(grow_rank), 0), self.max_rank - self.active_rank)
+        if add_rank <= 0:
+            return 0
+
+        start = self.active_rank
+        end = start + add_rank
+        self.lora_basis_k.data[start:end].copy_(self._sample_random_dirs(add_rank, self.lora_basis_k))
+        self.lora_basis_v.data[start:end].copy_(self._sample_random_dirs(add_rank, self.lora_basis_v))
+        self._orthonormalize_basis(self.lora_basis_k, end)
+        self._orthonormalize_basis(self.lora_basis_v, end)
+
+        self.lora_memory_k.data[:, start:end].zero_()
+        self.lora_memory_v.data[:, start:end].zero_()
+        self.lora_buffer_k.data[:, start:end].zero_()
+        self.lora_buffer_v.data[:, start:end].zero_()
+        self.importance_k.data[start:end].zero_()
+        self.importance_v.data[start:end].zero_()
+        self.importance_max_k.data[start:end].zero_()
+        self.importance_max_v.data[start:end].zero_()
+        self.active_rank = end
+        return add_rank
+
     def _delta_weight(self, basis, memory, buffer, use_buffer, rank_limit=None, rank_window=None):
         rank = self.active_rank if rank_limit is None else min(self.active_rank, rank_limit)
         start, end = (0, rank) if rank_window is None else rank_window
@@ -232,18 +262,82 @@ class AttentionDirectionalLoRA(nn.Module):
         }
         return gates, stats
 
+    def _compute_realized_drift_residual(self, basis, buffer, historical_rank, gamma):
+        rank = self.active_rank
+        delta = gamma * (buffer[:, :rank] @ basis[:rank, :])
+        delta_norm = torch.linalg.norm(delta)
+        if delta_norm.item() == 0.0:
+            return 0.0, delta, None, 0
+
+        residual = delta
+        if historical_rank > 0:
+            old_basis = basis[:historical_rank, :]
+            residual = delta - delta @ old_basis.t() @ old_basis
+
+        residual_norm = torch.linalg.norm(residual)
+        novelty = (residual_norm / (delta_norm + 1e-12)).item()
+        if residual_norm.item() == 0.0:
+            return novelty, residual, None, 0
+
+        u, s, vh = torch.linalg.svd(residual, full_matrices=False)
+        tol = max(1e-8, 1e-6 * float(s[0].item()))
+        est_rank = int(torch.count_nonzero(s > tol).item())
+        if est_rank <= 0:
+            est_rank = 1
+        return novelty, residual, (u, s, vh), est_rank
+
+    def _fit_residual_to_branch(
+        self,
+        basis,
+        memory,
+        buffer,
+        importance,
+        importance_max,
+        historical_rank,
+        target_rank,
+        residual_svd,
+    ):
+        rank = self.active_rank
+        end = historical_rank + target_rank
+        buffer.data[:, historical_rank:rank].zero_()
+        importance.data[historical_rank:rank].zero_()
+        importance_max.data[historical_rank:rank].zero_()
+
+        if target_rank > 0 and residual_svd is not None:
+            u, s, vh = residual_svd
+            copy_rank = min(target_rank, vh.size(0))
+            memory.data[:, historical_rank : historical_rank + copy_rank].copy_(
+                u[:, :copy_rank] * s[:copy_rank].unsqueeze(0)
+            )
+            basis.data[historical_rank : historical_rank + copy_rank].copy_(vh[:copy_rank])
+            if copy_rank < target_rank:
+                memory.data[:, historical_rank + copy_rank : end].zero_()
+        else:
+            memory.data[:, historical_rank:end].zero_()
+
+        if end < rank:
+            basis.data[end:rank].zero_()
+            memory.data[:, end:rank].zero_()
+            buffer.data[:, end:rank].zero_()
+            importance.data[end:rank].zero_()
+            importance_max.data[end:rank].zero_()
+
     def consolidate_task(
         self,
         gamma,
         historical_rank=None,
         conflict_gate_strength=0.0,
         conflict_gate_floor=0.0,
+        basis_update_mode="warmup_gradient",
+        novelty_threshold=0.0,
     ):
         with torch.no_grad():
             rank = self.active_rank
             historical_rank = rank if historical_rank is None else max(0, min(int(historical_rank), rank))
             conflict_gate_floor = max(0.0, min(float(conflict_gate_floor), 1.0))
             conflict_gate_strength = max(0.0, float(conflict_gate_strength))
+            basis_update_mode = str(basis_update_mode).lower()
+            novelty_threshold = max(0.0, float(novelty_threshold))
 
             gate_stats = None
             if historical_rank < rank and conflict_gate_strength > 0.0:
@@ -277,8 +371,60 @@ class AttentionDirectionalLoRA(nn.Module):
                     "gate_v": stats_v,
                 }
 
-            self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
-            self.lora_memory_v.data[:, :rank] += gamma * self.lora_buffer_v.data[:, :rank]
+            if basis_update_mode == "realized_drift":
+                if historical_rank > 0:
+                    self.lora_memory_k.data[:, :historical_rank] += gamma * self.lora_buffer_k.data[:, :historical_rank]
+                    self.lora_memory_v.data[:, :historical_rank] += gamma * self.lora_buffer_v.data[:, :historical_rank]
+
+                keep_rank = 0
+                if historical_rank < rank:
+                    novelty_k, _, svd_k, est_rank_k = self._compute_realized_drift_residual(
+                        self.lora_basis_k,
+                        self.lora_buffer_k,
+                        historical_rank,
+                        gamma,
+                    )
+                    novelty_v, _, svd_v, est_rank_v = self._compute_realized_drift_residual(
+                        self.lora_basis_v,
+                        self.lora_buffer_v,
+                        historical_rank,
+                        gamma,
+                    )
+                    novelty = 0.5 * (novelty_k + novelty_v)
+                    if novelty > novelty_threshold:
+                        keep_rank = min(rank - historical_rank, max(est_rank_k, est_rank_v))
+
+                    self._fit_residual_to_branch(
+                        self.lora_basis_k,
+                        self.lora_memory_k,
+                        self.lora_buffer_k,
+                        self.importance_k,
+                        self.importance_max_k,
+                        historical_rank,
+                        keep_rank,
+                        svd_k,
+                    )
+                    self._fit_residual_to_branch(
+                        self.lora_basis_v,
+                        self.lora_memory_v,
+                        self.lora_buffer_v,
+                        self.importance_v,
+                        self.importance_max_v,
+                        historical_rank,
+                        keep_rank,
+                        svd_v,
+                    )
+                    self.active_rank = historical_rank + keep_rank
+                else:
+                    self.lora_buffer_k.data.zero_()
+                    self.lora_buffer_v.data.zero_()
+            else:
+                self.lora_memory_k.data[:, :rank] += gamma * self.lora_buffer_k.data[:, :rank]
+                self.lora_memory_v.data[:, :rank] += gamma * self.lora_buffer_v.data[:, :rank]
+                self.lora_buffer_k.data.zero_()
+                self.lora_buffer_v.data.zero_()
+
+            rank = self.active_rank
             self.lora_buffer_k.data.zero_()
             self.lora_buffer_v.data.zero_()
             if self.active_rank > self.rank_budget:

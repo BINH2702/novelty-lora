@@ -207,6 +207,8 @@ class Net(nn.Module):
         historical_rank_map=None,
         conflict_gate_strength=0.0,
         conflict_gate_floor=0.0,
+        basis_update_mode="warmup_gradient",
+        novelty_threshold=0.0,
     ):
         gate_stats = []
         for module_idx, module in enumerate(self.iter_attention_modules()):
@@ -216,6 +218,8 @@ class Net(nn.Module):
                 historical_rank=historical_rank,
                 conflict_gate_strength=conflict_gate_strength,
                 conflict_gate_floor=conflict_gate_floor,
+                basis_update_mode=basis_update_mode,
+                novelty_threshold=novelty_threshold,
             )
             if stats is not None:
                 stats["module_index"] = module_idx
@@ -234,6 +238,12 @@ class Net(nn.Module):
             layer_limit = None if max_rank_map is None else max_rank_map.get(module_idx)
             stats.extend(module.collect_direction_stats(module_idx, layer_limit=layer_limit))
         return stats
+
+    def prepare_provisional_basis(self, grow_rank):
+        added = {}
+        for module_idx, module in enumerate(self.iter_attention_modules()):
+            added[module_idx] = module.activate_provisional_directions(grow_rank)
+        return added
 
     def get_active_ranks(self):
         return {idx: module.active_rank for idx, module in enumerate(self.iter_attention_modules())}

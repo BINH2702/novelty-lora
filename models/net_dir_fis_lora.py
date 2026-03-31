@@ -194,6 +194,8 @@ class Net(nn.Module):
         historical_rank_map=None,
         conflict_gate_strength=0.0,
         conflict_gate_floor=0.0,
+        basis_update_mode="warmup_gradient",
+        novelty_threshold=0.0,
     ):
         for module_idx, module in enumerate(self.iter_attention_modules()):
             historical_rank = None if historical_rank_map is None else historical_rank_map.get(module_idx)
@@ -202,6 +204,8 @@ class Net(nn.Module):
                 historical_rank=historical_rank,
                 conflict_gate_strength=conflict_gate_strength,
                 conflict_gate_floor=conflict_gate_floor,
+                basis_update_mode=basis_update_mode,
+                novelty_threshold=novelty_threshold,
             )
 
     def update_importance(self, fisher_values, decay, floor_frac=0.0):
@@ -209,6 +213,12 @@ class Net(nn.Module):
         for module in self.iter_attention_modules():
             module.update_importance(fisher_values[idx], fisher_values[idx + 1], decay, floor_frac=floor_frac)
             idx += 2
+
+    def prepare_provisional_basis(self, grow_rank):
+        added = {}
+        for module_idx, module in enumerate(self.iter_attention_modules()):
+            added[module_idx] = module.activate_provisional_directions(grow_rank)
+        return added
 
     def get_active_ranks(self):
         return {idx: module.active_rank for idx, module in enumerate(self.iter_attention_modules())}

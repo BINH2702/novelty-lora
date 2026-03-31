@@ -23,6 +23,7 @@ class DirFisLoRA(BaseLearner):
         self.gamma = args["gamma"]
         self.reg_weight = args["lambda"]
         self.importance_decay = args.get("importance_decay", self.gamma)
+        self.basis_update_mode = str(args.get("basis_update_mode", "realized_drift")).lower()
         self.novelty_threshold = args["novelty_threshold"]
         self.grow_rank = args.get("grow_rank", 1)
         self.warmup_batches = args.get("warmup_batches", 1)
@@ -51,9 +52,14 @@ class DirFisLoRA(BaseLearner):
         print_trainable_params(self.network)
 
         self._historical_rank_snapshot = self.network.get_active_ranks()
+        if self.basis_update_mode == "realized_drift" and self.count_updates == 0:
+            self._historical_rank_snapshot = {idx: 0 for idx in self._historical_rank_snapshot}
 
         with torch.enable_grad():
-            self._warmup_and_expand_basis(train_loader)
+            if self.basis_update_mode == "realized_drift":
+                self.network.prepare_provisional_basis(self.grow_rank)
+            else:
+                self._warmup_and_expand_basis(train_loader)
 
         encoder_params = self.network.image_encoder.parameters()
         cls_params = [p for p in self.network.classifier_pool.parameters() if p.requires_grad]
@@ -132,6 +138,8 @@ class DirFisLoRA(BaseLearner):
             historical_rank_map=self._historical_rank_snapshot,
             conflict_gate_strength=gate_strength,
             conflict_gate_floor=self.conflict_gate_floor,
+            basis_update_mode=self.basis_update_mode,
+            novelty_threshold=self.novelty_threshold,
         )
         self.count_updates += 1
         super().after_task()
