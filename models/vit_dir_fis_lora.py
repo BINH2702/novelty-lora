@@ -774,12 +774,17 @@ class AttentionDirFisLoRA(nn.Module):
         if use_buffer and self.use_task_drift:
             delta_k = delta_k + self._task_delta_weight(self.task_memory_k, self.task_basis_k)
             delta_v = delta_v + self._task_delta_weight(self.task_memory_v, self.task_basis_v)
-        qkv[:, :, self.dim : 2 * self.dim] += x @ delta_k.t()
-        qkv[:, :, 2 * self.dim :] += x @ delta_v.t()
 
         if use_buffer and register_hook:
+            if not delta_k.requires_grad:
+                delta_k = delta_k.detach().clone().requires_grad_(True)
+            if not delta_v.requires_grad:
+                delta_v = delta_v.detach().clone().requires_grad_(True)
             delta_k.register_hook(self.save_grad("delta_w_k_grad"))
             delta_v.register_hook(self.save_grad("delta_w_v_grad"))
+
+        qkv[:, :, self.dim : 2 * self.dim] += x @ delta_k.t()
+        qkv[:, :, 2 * self.dim :] += x @ delta_v.t()
 
         qkv = qkv.reshape(bsz, seq_len, 3, self.num_heads, channels // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv.unbind(0)
