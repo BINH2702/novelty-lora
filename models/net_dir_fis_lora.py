@@ -117,7 +117,7 @@ class Net(nn.Module):
             rank=args["rank"],
             rank_budget=args.get("rank_budget", args["rank"]),
             max_rank=args.get("max_rank", args.get("rank_budget", args["rank"])),
-            task_rank=args.get("task_rank", args.get("grow_rank", args["rank"])),
+            task_rank=args.get("task_rank", args["rank"]),
             enforce_rank_budget=args.get("enforce_rank_budget", True),
         )
 

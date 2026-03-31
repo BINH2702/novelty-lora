@@ -33,7 +33,7 @@ class DirFisLoRA(BaseLearner):
         self.reg_alpha = max(0.0, _as_float(args.get("reg_alpha", 1.0), default=1.0))
         self.reg_w_tau = max(0.0, _as_float(args.get("reg_w_tau", 0.5), default=0.5))
         self.reg_w_max = max(0.0, _as_float(args.get("reg_w_max", 5.0), default=5.0))
-        self.reg_new_dir_weight = max(0.0, _as_float(args.get("reg_new_dir_weight", 0.05), default=0.05))
+        self.reg_new_dir_weight = max(0.0, _as_float(args.get("reg_new_dir_weight", 0.0), default=0.0))
         self.importance_floor_frac = max(0.0, _as_float(args.get("importance_floor_frac", 0.0), default=0.0))
 
         gate_flag = args.get("conflict_gate_enabled", False)
@@ -140,6 +140,16 @@ class DirFisLoRA(BaseLearner):
             basis_update_mode=self.basis_update_mode,
             novelty_threshold=self.novelty_threshold,
         )
+        rank_map = self.network.get_active_ranks()
+        if rank_map:
+            rank_values = list(rank_map.values())
+            logging.info(
+                "Task %s consolidated active rank => mean %.2f, min %s, max %s",
+                self.cur_task,
+                float(sum(rank_values) / len(rank_values)),
+                int(min(rank_values)),
+                int(max(rank_values)),
+            )
         self._update_importance()
         self.count_updates += 1
         super().after_task()
