@@ -57,7 +57,7 @@ class DirFisLoRA(BaseLearner):
 
         with torch.enable_grad():
             if self.basis_update_mode == "realized_drift":
-                self.network.prepare_provisional_basis(self.grow_rank)
+                self.network.prepare_task_drift()
             else:
                 self._warmup_and_expand_basis(train_loader)
 
@@ -131,7 +131,6 @@ class DirFisLoRA(BaseLearner):
         return self.network.module if isinstance(self.network, nn.DataParallel) else self.network
 
     def after_task(self):
-        self._update_importance()
         gate_strength = self.conflict_gate_strength if self.conflict_gate_enabled and self.count_updates > 0 else 0.0
         self.network.consolidate_task(
             self.gamma,
@@ -141,16 +140,29 @@ class DirFisLoRA(BaseLearner):
             basis_update_mode=self.basis_update_mode,
             novelty_threshold=self.novelty_threshold,
         )
+        self._update_importance()
         self.count_updates += 1
         super().after_task()
 
     def freeze_network(self):
         target_suffix = f".{self.cur_task}"
-        unfrozen_keys = [
-            f"classifier_pool{target_suffix}",
-            "lora_buffer_k",
-            "lora_buffer_v",
-        ]
+        unfrozen_keys = [f"classifier_pool{target_suffix}"]
+        if self.basis_update_mode == "realized_drift":
+            unfrozen_keys.extend(
+                [
+                    "task_memory_k",
+                    "task_memory_v",
+                    "task_basis_k",
+                    "task_basis_v",
+                ]
+            )
+        else:
+            unfrozen_keys.extend(
+                [
+                    "lora_buffer_k",
+                    "lora_buffer_v",
+                ]
+            )
         for name, param in self.network.named_parameters():
             param.requires_grad_(any(key in name for key in unfrozen_keys))
 

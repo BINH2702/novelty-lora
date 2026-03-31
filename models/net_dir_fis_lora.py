@@ -57,6 +57,7 @@ class ViT(VisionTransformer):
         rank=4,
         rank_budget=10,
         max_rank=20,
+        task_rank=2,
         enforce_rank_budget=True,
     ):
         super().__init__(
@@ -83,6 +84,7 @@ class ViT(VisionTransformer):
                 block_fn,
                 rank_budget=rank_budget,
                 max_rank=max_rank,
+                task_rank=task_rank,
                 enforce_rank_budget=enforce_rank_budget,
             ),
             n_tasks=n_tasks,
@@ -115,6 +117,7 @@ class Net(nn.Module):
             rank=args["rank"],
             rank_budget=args.get("rank_budget", args["rank"]),
             max_rank=args.get("max_rank", args.get("rank_budget", args["rank"])),
+            task_rank=args.get("task_rank", args.get("grow_rank", args["rank"])),
             enforce_rank_budget=args.get("enforce_rank_budget", True),
         )
 
@@ -219,6 +222,10 @@ class Net(nn.Module):
         for module_idx, module in enumerate(self.iter_attention_modules()):
             added[module_idx] = module.activate_provisional_directions(grow_rank)
         return added
+
+    def prepare_task_drift(self):
+        for module in self.iter_attention_modules():
+            module.reset_task_drift()
 
     def get_active_ranks(self):
         return {idx: module.active_rank for idx, module in enumerate(self.iter_attention_modules())}

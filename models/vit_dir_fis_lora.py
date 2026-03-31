@@ -27,6 +27,7 @@ class AttentionDirFisLoRA(nn.Module):
         r=4,
         rank_budget=10,
         max_rank=20,
+        task_rank=2,
         enforce_rank_budget=True,
         n_tasks=10,
     ):
@@ -45,6 +46,7 @@ class AttentionDirFisLoRA(nn.Module):
         self.init_rank = r
         self.rank_budget = max(rank_budget, r)
         self.max_rank = max(max_rank, self.rank_budget)
+        self.task_rank = max(int(task_rank), 1)
         self.enforce_rank_budget = bool(enforce_rank_budget)
         self.active_rank = r
 
@@ -54,6 +56,10 @@ class AttentionDirFisLoRA(nn.Module):
         self.lora_memory_v = nn.Parameter(torch.zeros(dim, self.max_rank), requires_grad=False)
         self.lora_buffer_k = nn.Parameter(torch.zeros(dim, self.max_rank))
         self.lora_buffer_v = nn.Parameter(torch.zeros(dim, self.max_rank))
+        self.task_memory_k = nn.Parameter(torch.zeros(dim, self.task_rank))
+        self.task_memory_v = nn.Parameter(torch.zeros(dim, self.task_rank))
+        self.task_basis_k = nn.Parameter(torch.zeros(self.task_rank, dim))
+        self.task_basis_v = nn.Parameter(torch.zeros(self.task_rank, dim))
 
         self.register_buffer("importance_k", torch.zeros(self.max_rank))
         self.register_buffer("importance_v", torch.zeros(self.max_rank))
@@ -61,6 +67,7 @@ class AttentionDirFisLoRA(nn.Module):
         self.register_buffer("importance_max_v", torch.zeros(self.max_rank))
         self.register_buffer("fisher_k", torch.zeros(dim, dim))
         self.register_buffer("fisher_v", torch.zeros(dim, dim))
+        self.use_task_drift = False
 
     def init_param(self):
         nn.init.kaiming_uniform_(self.lora_basis_k[: self.init_rank], a=math.sqrt(5))
@@ -75,6 +82,8 @@ class AttentionDirFisLoRA(nn.Module):
         self.importance_v.zero_()
         self.importance_max_k.zero_()
         self.importance_max_v.zero_()
+        self.reset_task_drift()
+        self.use_task_drift = False
 
     def _orthonormalize_basis(self, basis, rank):
         if rank <= 0:
@@ -112,12 +121,36 @@ class AttentionDirFisLoRA(nn.Module):
         self.active_rank = end
         return add_rank
 
+    def reset_task_drift(self):
+        with torch.no_grad():
+            nn.init.zeros_(self.task_memory_k)
+            nn.init.zeros_(self.task_memory_v)
+            self.task_basis_k.copy_(self._sample_random_dirs(self.task_rank, self.task_basis_k))
+            self.task_basis_v.copy_(self._sample_random_dirs(self.task_rank, self.task_basis_v))
+        self.use_task_drift = True
+
+    def clear_task_drift(self):
+        with torch.no_grad():
+            self.task_memory_k.zero_()
+            self.task_memory_v.zero_()
+        self.use_task_drift = False
+
     def _delta_weight(self, basis, memory, buffer, use_buffer):
         rank = self.active_rank
         coeff = memory[:, :rank]
         if use_buffer:
             coeff = coeff + buffer[:, :rank]
         return coeff @ basis[:rank, :]
+
+    def _task_delta_weight(self, memory, basis):
+        if not self.use_task_drift:
+            return torch.zeros(
+                memory.size(0),
+                basis.size(1),
+                device=memory.device,
+                dtype=memory.dtype,
+            )
+        return memory @ basis
 
     def _compute_novelty_and_residual(self, grad, basis, rank):
         grad_norm = torch.linalg.norm(grad)
@@ -239,6 +272,36 @@ class AttentionDirFisLoRA(nn.Module):
         weight_cap = max(0.0, float(weight_cap))
         new_dir_weight = max(0.0, float(new_dir_weight))
 
+        if self.use_task_drift:
+            task_delta_k = self._task_delta_weight(self.task_memory_k, self.task_basis_k)
+            task_delta_v = self._task_delta_weight(self.task_memory_v, self.task_basis_v)
+            importance_k = self.importance_k[:rank].detach().to(device).clamp(min=0.0)
+            importance_v = self.importance_v[:rank].detach().to(device).clamp(min=0.0)
+
+            penalty_k = self._branch_regularization_from_delta(
+                task_delta_k,
+                self.lora_basis_k[:rank, :],
+                importance_k,
+                historical_rank,
+                lambda_min=lambda_min,
+                alpha=alpha,
+                weight_power=weight_power,
+                weight_cap=weight_cap,
+                new_dir_weight=new_dir_weight,
+            )
+            penalty_v = self._branch_regularization_from_delta(
+                task_delta_v,
+                self.lora_basis_v[:rank, :],
+                importance_v,
+                historical_rank,
+                lambda_min=lambda_min,
+                alpha=alpha,
+                weight_power=weight_power,
+                weight_cap=weight_cap,
+                new_dir_weight=new_dir_weight,
+            )
+            return 0.5 * (penalty_k + penalty_v)
+
         coeff_k = self.lora_buffer_k[:, :rank]
         coeff_v = self.lora_buffer_v[:, :rank]
         importance_k = self.importance_k[:rank].detach().to(device).clamp(min=0.0)
@@ -265,6 +328,39 @@ class AttentionDirFisLoRA(nn.Module):
             new_dir_weight=new_dir_weight,
         )
         return 0.5 * (penalty_k + penalty_v)
+
+    def _branch_regularization_from_delta(
+        self,
+        delta,
+        basis,
+        importance,
+        historical_rank,
+        lambda_min,
+        alpha,
+        weight_power,
+        weight_cap,
+        new_dir_weight,
+    ):
+        penalty = torch.tensor(0.0, device=delta.device, dtype=delta.dtype)
+        residual = delta
+
+        if historical_rank > 0:
+            old_basis = basis[:historical_rank, :]
+            coeff = delta @ old_basis.t()
+            energy = coeff.pow(2).sum(dim=0)
+            old_importance = importance[:historical_rank]
+            old_mean = torch.mean(old_importance) + 1e-12
+            norm_importance = (old_importance / old_mean).pow(weight_power)
+            if weight_cap > 0.0:
+                norm_importance = torch.clamp(norm_importance, max=weight_cap)
+            strength = lambda_min + alpha * norm_importance
+            penalty = penalty + torch.sum(strength * energy)
+            residual = delta - coeff @ old_basis
+
+        if new_dir_weight > 0.0:
+            penalty = penalty + new_dir_weight * torch.sum(residual.pow(2))
+
+        return penalty
 
     def _branch_regularization(
         self,
@@ -373,6 +469,41 @@ class AttentionDirFisLoRA(nn.Module):
             est_rank = 1
         return novelty, residual, (u, s, vh), est_rank
 
+    def _compute_task_drift_residual(self, basis, task_delta, historical_rank):
+        delta_norm = torch.linalg.norm(task_delta)
+        if delta_norm.item() == 0.0:
+            projected = torch.zeros(
+                task_delta.size(0),
+                historical_rank,
+                device=task_delta.device,
+                dtype=task_delta.dtype,
+            )
+            return 0.0, projected, task_delta, None, 0
+
+        projected = torch.zeros(
+            task_delta.size(0),
+            historical_rank,
+            device=task_delta.device,
+            dtype=task_delta.dtype,
+        )
+        residual = task_delta
+        if historical_rank > 0:
+            old_basis = basis[:historical_rank, :]
+            projected = task_delta @ old_basis.t()
+            residual = task_delta - projected @ old_basis
+
+        residual_norm = torch.linalg.norm(residual)
+        novelty = (residual_norm / (delta_norm + 1e-12)).item()
+        if residual_norm.item() == 0.0:
+            return novelty, projected, residual, None, 0
+
+        u, s, vh = torch.linalg.svd(residual, full_matrices=False)
+        tol = max(1e-8, 1e-6 * float(s[0].item()))
+        est_rank = int(torch.count_nonzero(s > tol).item())
+        if est_rank <= 0:
+            est_rank = 1
+        return novelty, projected, residual, (u, s, vh), est_rank
+
     def _fit_residual_to_branch(
         self,
         basis,
@@ -425,6 +556,80 @@ class AttentionDirFisLoRA(nn.Module):
             conflict_gate_strength = max(0.0, float(conflict_gate_strength))
             basis_update_mode = str(basis_update_mode).lower()
             novelty_threshold = max(0.0, float(novelty_threshold))
+
+            if basis_update_mode == "realized_drift" and self.use_task_drift:
+                task_delta_k = gamma * self._task_delta_weight(self.task_memory_k, self.task_basis_k)
+                task_delta_v = gamma * self._task_delta_weight(self.task_memory_v, self.task_basis_v)
+
+                novelty_k, projected_k, _, svd_k, est_rank_k = self._compute_task_drift_residual(
+                    self.lora_basis_k,
+                    task_delta_k,
+                    historical_rank,
+                )
+                novelty_v, projected_v, _, svd_v, est_rank_v = self._compute_task_drift_residual(
+                    self.lora_basis_v,
+                    task_delta_v,
+                    historical_rank,
+                )
+
+                if historical_rank > 0:
+                    self.lora_memory_k.data[:, :historical_rank] += projected_k
+                    self.lora_memory_v.data[:, :historical_rank] += projected_v
+
+                keep_rank = 0
+                available_rank = max(self.max_rank - historical_rank, 0)
+                novelty = 0.5 * (novelty_k + novelty_v)
+                if novelty > novelty_threshold and available_rank > 0:
+                    keep_rank = min(available_rank, max(est_rank_k, est_rank_v))
+
+                end = historical_rank + keep_rank
+                if keep_rank > 0:
+                    u_k, s_k, vh_k = svd_k
+                    u_v, s_v, vh_v = svd_v
+                    copy_rank_k = min(keep_rank, vh_k.size(0))
+                    copy_rank_v = min(keep_rank, vh_v.size(0))
+                    self.lora_memory_k.data[:, historical_rank : historical_rank + copy_rank_k].copy_(
+                        u_k[:, :copy_rank_k] * s_k[:copy_rank_k].unsqueeze(0)
+                    )
+                    self.lora_basis_k.data[historical_rank : historical_rank + copy_rank_k].copy_(vh_k[:copy_rank_k])
+                    if copy_rank_k < keep_rank:
+                        self.lora_memory_k.data[:, historical_rank + copy_rank_k : end].zero_()
+                        self.lora_basis_k.data[historical_rank + copy_rank_k : end].zero_()
+
+                    self.lora_memory_v.data[:, historical_rank : historical_rank + copy_rank_v].copy_(
+                        u_v[:, :copy_rank_v] * s_v[:copy_rank_v].unsqueeze(0)
+                    )
+                    self.lora_basis_v.data[historical_rank : historical_rank + copy_rank_v].copy_(vh_v[:copy_rank_v])
+                    if copy_rank_v < keep_rank:
+                        self.lora_memory_v.data[:, historical_rank + copy_rank_v : end].zero_()
+                        self.lora_basis_v.data[historical_rank + copy_rank_v : end].zero_()
+
+                if end < self.max_rank:
+                    self.lora_basis_k.data[end:].zero_()
+                    self.lora_basis_v.data[end:].zero_()
+                    self.lora_memory_k.data[:, end:].zero_()
+                    self.lora_memory_v.data[:, end:].zero_()
+                    self.lora_buffer_k.data[:, end:].zero_()
+                    self.lora_buffer_v.data[:, end:].zero_()
+                    self.importance_k.data[end:].zero_()
+                    self.importance_v.data[end:].zero_()
+                    self.importance_max_k.data[end:].zero_()
+                    self.importance_max_v.data[end:].zero_()
+
+                self.lora_buffer_k.data.zero_()
+                self.lora_buffer_v.data.zero_()
+                if historical_rank < end:
+                    self.importance_k.data[historical_rank:end].zero_()
+                    self.importance_v.data[historical_rank:end].zero_()
+                    self.importance_max_k.data[historical_rank:end].zero_()
+                    self.importance_max_v.data[historical_rank:end].zero_()
+
+                self.active_rank = end
+                self.clear_task_drift()
+
+                if self.enforce_rank_budget and self.active_rank > self.rank_budget:
+                    self._prune()
+                return
 
             if historical_rank < rank and conflict_gate_strength > 0.0:
                 gates_k, _ = self._compute_new_rank_gates(
@@ -554,8 +759,21 @@ class AttentionDirFisLoRA(nn.Module):
         bsz, seq_len, channels = x.shape
         qkv = self.qkv(x)
 
-        delta_k = self._delta_weight(self.lora_basis_k, self.lora_memory_k, self.lora_buffer_k, use_buffer)
-        delta_v = self._delta_weight(self.lora_basis_v, self.lora_memory_v, self.lora_buffer_v, use_buffer)
+        delta_k = self._delta_weight(
+            self.lora_basis_k,
+            self.lora_memory_k,
+            self.lora_buffer_k,
+            use_buffer and not self.use_task_drift,
+        )
+        delta_v = self._delta_weight(
+            self.lora_basis_v,
+            self.lora_memory_v,
+            self.lora_buffer_v,
+            use_buffer and not self.use_task_drift,
+        )
+        if use_buffer and self.use_task_drift:
+            delta_k = delta_k + self._task_delta_weight(self.task_memory_k, self.task_basis_k)
+            delta_v = delta_v + self._task_delta_weight(self.task_memory_v, self.task_basis_v)
         qkv[:, :, self.dim : 2 * self.dim] += x @ delta_k.t()
         qkv[:, :, 2 * self.dim :] += x @ delta_v.t()
 
@@ -593,6 +811,7 @@ class Block(nn.Module):
         r=4,
         rank_budget=10,
         max_rank=20,
+        task_rank=2,
         enforce_rank_budget=True,
     ):
         super().__init__()
@@ -607,6 +826,7 @@ class Block(nn.Module):
             r=r,
             rank_budget=rank_budget,
             max_rank=max_rank,
+            task_rank=task_rank,
             enforce_rank_budget=enforce_rank_budget,
         )
         self.ls1 = LayerScale(dim, init_values=init_values) if init_values else nn.Identity()
