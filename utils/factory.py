@@ -7,6 +7,7 @@ from methods.ewclora import EWCLoRA
 from methods.novelty_lora import NoveltyLoRA
 from methods.directional_lora import DirectionalLoRA
 from methods.dir_fis_lora import DirFisLoRA
+from methods.dir_fis_lora_dc import DirFisLoRADC
 
 
 def get_model(method, args):
@@ -23,6 +24,7 @@ def get_model(method, args):
                'dfsc_ia_no_ia': DirFisLoRA,
                'dfsc_ia_no_adaptive_alpha': DirFisLoRA,
                'dfsc_ia_no_transport': DirFisLoRA,
+               'dfsc_ia_dc': DirFisLoRADC,
                }
     return options[name](args)
 
