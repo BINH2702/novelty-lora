@@ -1,7 +1,7 @@
 {
     "seed" : [0],
     "dataset" : "cifar100",
-    "data_path" : "data/cifar100",
+    "data_path" : "/mnt/data/binhnt6/cifar100",
     "load" : "vit_base_patch16_224_in21k",
 
     "init_cls" : 10,
