@@ -202,6 +202,7 @@ class Net(nn.Module):
         importance_aware_consolidation=False,
         protected_slots=0,
         protected_slots_ratio=0.0,
+        importance_transport=True,
     ):
         for module_idx, module in enumerate(self.iter_attention_modules()):
             historical_rank = None if historical_rank_map is None else historical_rank_map.get(module_idx)
@@ -215,6 +216,7 @@ class Net(nn.Module):
                 importance_aware_consolidation=importance_aware_consolidation,
                 protected_slots=protected_slots,
                 protected_slots_ratio=protected_slots_ratio,
+                importance_transport=importance_transport,
             )
 
     def update_importance(self, fisher_values, decay, floor_frac=0.0):

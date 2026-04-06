@@ -9,7 +9,7 @@
     "sessions" : 10,
     "shuffle" : false,
 
-    "method" : "dfsc_ia",
+    "method" : "dfsc_ia_no_ia",
     "basis_update_mode" : "realized_drift",
     "optimizer" : "adam",
     "scheduler" : "cosine",
@@ -47,8 +47,8 @@
     "alpha_scale_min" : 0.5,
     "alpha_scale_max" : 2.0,
 
-    "importance_aware_consolidation" : true,
-    "protected_slots" : 2,
+    "importance_aware_consolidation" : false,
+    "protected_slots" : 0,
     "protected_slots_ratio" : 0.0,
     "importance_transport" : true,
 

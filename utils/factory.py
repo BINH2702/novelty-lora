@@ -20,6 +20,9 @@ def get_model(method, args):
                'directional_lora': DirectionalLoRA,
                'dir_fis_lora': DirFisLoRA,
                'dfsc_ia': DirFisLoRA,
+               'dfsc_ia_no_ia': DirFisLoRA,
+               'dfsc_ia_no_adaptive_alpha': DirFisLoRA,
+               'dfsc_ia_no_transport': DirFisLoRA,
                }
     return options[name](args)
 

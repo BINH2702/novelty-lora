@@ -9,7 +9,7 @@
     "sessions" : 10,
     "shuffle" : false,
 
-    "method" : "dfsc_ia",
+    "method" : "dfsc_ia_no_adaptive_alpha",
     "basis_update_mode" : "realized_drift",
     "optimizer" : "adam",
     "scheduler" : "cosine",
@@ -39,7 +39,7 @@
     "reg_new_dir_weight" : 0.0,
     "importance_floor_frac" : 0.3,
 
-    "alpha_adaptive" : true,
+    "alpha_adaptive" : false,
     "alpha_probe_batches" : 2,
     "alpha_probe_use_buffer" : false,
     "alpha_probe_ema" : 0.0,

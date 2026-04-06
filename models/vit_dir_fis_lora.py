@@ -579,6 +579,7 @@ class AttentionDirFisLoRA(nn.Module):
         merged_delta,
         novelty_threshold,
         protected_slots,
+        importance_transport,
     ):
         device = merged_delta.device
         dtype = merged_delta.dtype
@@ -637,7 +638,10 @@ class AttentionDirFisLoRA(nn.Module):
             basis.data[start:end].copy_(residual_vh[:copy_rank])
 
         if new_rank > 0:
-            carried = self._transport_importance(old_basis, old_importance, basis[:new_rank, :])
+            if importance_transport:
+                carried = self._transport_importance(old_basis, old_importance, basis[:new_rank, :])
+            else:
+                carried = torch.zeros(new_rank, device=device, dtype=dtype)
             importance.data[:new_rank].copy_(carried)
             importance_max.data[:new_rank].copy_(carried)
 
@@ -661,6 +665,7 @@ class AttentionDirFisLoRA(nn.Module):
         importance_aware_consolidation=False,
         protected_slots=0,
         protected_slots_ratio=0.0,
+        importance_transport=True,
     ):
         with torch.no_grad():
             rank = self.active_rank
@@ -700,6 +705,7 @@ class AttentionDirFisLoRA(nn.Module):
                         merged_k,
                         novelty_threshold,
                         protected_slots,
+                        importance_transport,
                     )
                     new_rank_v = self._importance_aware_branch_consolidation(
                         self.lora_basis_v,
@@ -711,6 +717,7 @@ class AttentionDirFisLoRA(nn.Module):
                         merged_v,
                         novelty_threshold,
                         protected_slots,
+                        importance_transport,
                     )
 
                     self.active_rank = min(self.max_rank, max(new_rank_k, new_rank_v))
@@ -830,6 +837,7 @@ class AttentionDirFisLoRA(nn.Module):
                         merged_k,
                         novelty_threshold,
                         protected_slots,
+                        importance_transport,
                     )
                     new_rank_v = self._importance_aware_branch_consolidation(
                         self.lora_basis_v,
@@ -841,6 +849,7 @@ class AttentionDirFisLoRA(nn.Module):
                         merged_v,
                         novelty_threshold,
                         protected_slots,
+                        importance_transport,
                     )
                     self.active_rank = min(self.max_rank, max(new_rank_k, new_rank_v))
                     self.lora_buffer_k.data.zero_()

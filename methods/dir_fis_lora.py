@@ -53,6 +53,7 @@ class DirFisLoRA(BaseLearner):
         )
         self.protected_slots = max(0, int(_as_float(args.get("protected_slots", 0), default=0)))
         self.protected_slots_ratio = max(0.0, _as_float(args.get("protected_slots_ratio", 0.0), default=0.0))
+        self.importance_transport = _as_bool(args.get("importance_transport", True), default=True)
 
         gate_flag = args.get("conflict_gate_enabled", False)
         self.conflict_gate_enabled = _as_bool(gate_flag, default=False)
@@ -163,6 +164,7 @@ class DirFisLoRA(BaseLearner):
             importance_aware_consolidation=self.importance_aware_consolidation,
             protected_slots=self.protected_slots,
             protected_slots_ratio=self.protected_slots_ratio,
+            importance_transport=self.importance_transport,
         )
         rank_map = self.network.get_active_ranks()
         if rank_map:
