@@ -540,6 +540,116 @@ class AttentionDirFisLoRA(nn.Module):
             importance.data[end:rank].zero_()
             importance_max.data[end:rank].zero_()
 
+    def _resolve_protected_slots(self, historical_rank, protected_slots, protected_slots_ratio):
+        count = max(0, int(protected_slots))
+        ratio = max(0.0, float(protected_slots_ratio))
+        if ratio > 0.0 and historical_rank > 0:
+            count = max(count, int(round(ratio * historical_rank)))
+        return min(max(0, historical_rank), count)
+
+    def _estimate_rank_from_singulars(self, singular_values):
+        if singular_values is None or singular_values.numel() == 0:
+            return 0
+        tol = max(1e-8, 1e-6 * float(singular_values[0].item()))
+        est_rank = int(torch.count_nonzero(singular_values > tol).item())
+        return max(1, est_rank)
+
+    def _transport_importance(self, old_basis, old_importance, new_basis):
+        if (
+            old_basis is None
+            or old_importance is None
+            or new_basis is None
+            or old_basis.numel() == 0
+            or old_importance.numel() == 0
+            or new_basis.numel() == 0
+        ):
+            return torch.zeros(new_basis.size(0), device=new_basis.device, dtype=new_basis.dtype)
+        overlap = torch.matmul(new_basis, old_basis.t())
+        carried = torch.matmul(overlap.pow(2), old_importance)
+        return torch.nan_to_num(carried, nan=0.0, posinf=1e6, neginf=0.0)
+
+    def _importance_aware_branch_consolidation(
+        self,
+        basis,
+        memory,
+        buffer,
+        importance,
+        importance_max,
+        historical_rank,
+        merged_delta,
+        novelty_threshold,
+        protected_slots,
+    ):
+        device = merged_delta.device
+        dtype = merged_delta.dtype
+        rank = self.active_rank
+
+        old_basis = basis[:historical_rank, :].detach().clone()
+        old_importance = importance[:historical_rank].detach().clone().to(device=device, dtype=dtype).clamp(min=0.0)
+
+        protected_slots = min(max(0, int(protected_slots)), historical_rank)
+        protected_basis = torch.zeros(0, basis.size(1), device=device, dtype=dtype)
+        protected_coeff = torch.zeros(merged_delta.size(0), 0, device=device, dtype=dtype)
+        if protected_slots > 0 and historical_rank > 0:
+            scores = old_importance
+            if torch.sum(scores).item() <= 0.0:
+                scores = torch.linalg.norm(memory[:, :historical_rank], dim=0).to(device=device, dtype=dtype)
+            if torch.sum(scores).item() <= 0.0:
+                scores = torch.ones_like(scores)
+            keep_idx = torch.topk(scores, k=protected_slots, largest=True).indices.sort().values
+            protected_basis = old_basis[keep_idx, :]
+            protected_coeff = merged_delta @ protected_basis.t()
+
+        protected_recon = protected_coeff @ protected_basis if protected_slots > 0 else torch.zeros_like(merged_delta)
+        residual = merged_delta - protected_recon
+        merged_norm = torch.linalg.norm(merged_delta)
+        residual_norm = torch.linalg.norm(residual)
+        novelty = (residual_norm / (merged_norm + 1e-12)).item() if merged_norm.item() > 0.0 else 0.0
+
+        residual_keep = 0
+        residual_u = None
+        residual_s = None
+        residual_vh = None
+        residual_budget = max(self.max_rank - protected_slots, 0)
+        if residual_budget > 0 and residual_norm.item() > 0.0 and novelty > novelty_threshold:
+            residual_u, residual_s, residual_vh = torch.linalg.svd(residual, full_matrices=False)
+            residual_keep = min(residual_budget, self._estimate_rank_from_singulars(residual_s))
+
+        copy_rank = 0
+        if residual_keep > 0 and residual_vh is not None:
+            copy_rank = min(residual_keep, residual_vh.size(0))
+
+        new_rank = protected_slots + copy_rank
+        basis.data.zero_()
+        memory.data.zero_()
+        buffer.data.zero_()
+        importance.data.zero_()
+        importance_max.data.zero_()
+
+        if protected_slots > 0:
+            basis.data[:protected_slots].copy_(protected_basis)
+            memory.data[:, :protected_slots].copy_(protected_coeff)
+
+        if copy_rank > 0:
+            start = protected_slots
+            end = start + copy_rank
+            memory.data[:, start:end].copy_(residual_u[:, :copy_rank] * residual_s[:copy_rank].unsqueeze(0))
+            basis.data[start:end].copy_(residual_vh[:copy_rank])
+
+        if new_rank > 0:
+            carried = self._transport_importance(old_basis, old_importance, basis[:new_rank, :])
+            importance.data[:new_rank].copy_(carried)
+            importance_max.data[:new_rank].copy_(carried)
+
+        if new_rank < rank:
+            basis.data[new_rank:rank].zero_()
+            memory.data[:, new_rank:rank].zero_()
+            buffer.data[:, new_rank:rank].zero_()
+            importance.data[new_rank:rank].zero_()
+            importance_max.data[new_rank:rank].zero_()
+
+        return int(new_rank)
+
     def consolidate_task(
         self,
         gamma,
@@ -548,6 +658,9 @@ class AttentionDirFisLoRA(nn.Module):
         conflict_gate_floor=0.0,
         basis_update_mode="warmup_gradient",
         novelty_threshold=0.0,
+        importance_aware_consolidation=False,
+        protected_slots=0,
+        protected_slots_ratio=0.0,
     ):
         with torch.no_grad():
             rank = self.active_rank
@@ -556,10 +669,55 @@ class AttentionDirFisLoRA(nn.Module):
             conflict_gate_strength = max(0.0, float(conflict_gate_strength))
             basis_update_mode = str(basis_update_mode).lower()
             novelty_threshold = max(0.0, float(novelty_threshold))
+            protected_slots = self._resolve_protected_slots(
+                historical_rank,
+                protected_slots,
+                protected_slots_ratio,
+            )
+            importance_aware_consolidation = bool(importance_aware_consolidation)
 
             if basis_update_mode == "realized_drift" and self.use_task_drift:
                 task_delta_k = gamma * self._task_delta_weight(self.task_memory_k, self.task_basis_k)
                 task_delta_v = gamma * self._task_delta_weight(self.task_memory_v, self.task_basis_v)
+
+                if importance_aware_consolidation:
+                    old_delta_k = torch.zeros_like(task_delta_k)
+                    old_delta_v = torch.zeros_like(task_delta_v)
+                    if historical_rank > 0:
+                        old_delta_k = self.lora_memory_k[:, :historical_rank] @ self.lora_basis_k[:historical_rank, :]
+                        old_delta_v = self.lora_memory_v[:, :historical_rank] @ self.lora_basis_v[:historical_rank, :]
+
+                    merged_k = old_delta_k + task_delta_k
+                    merged_v = old_delta_v + task_delta_v
+
+                    new_rank_k = self._importance_aware_branch_consolidation(
+                        self.lora_basis_k,
+                        self.lora_memory_k,
+                        self.lora_buffer_k,
+                        self.importance_k,
+                        self.importance_max_k,
+                        historical_rank,
+                        merged_k,
+                        novelty_threshold,
+                        protected_slots,
+                    )
+                    new_rank_v = self._importance_aware_branch_consolidation(
+                        self.lora_basis_v,
+                        self.lora_memory_v,
+                        self.lora_buffer_v,
+                        self.importance_v,
+                        self.importance_max_v,
+                        historical_rank,
+                        merged_v,
+                        novelty_threshold,
+                        protected_slots,
+                    )
+
+                    self.active_rank = min(self.max_rank, max(new_rank_k, new_rank_v))
+                    self.clear_task_drift()
+                    if self.enforce_rank_budget and self.active_rank > self.rank_budget:
+                        self._prune()
+                    return
 
                 novelty_k, projected_k, _, svd_k, est_rank_k = self._compute_task_drift_residual(
                     self.lora_basis_k,
@@ -656,6 +814,41 @@ class AttentionDirFisLoRA(nn.Module):
                 self.lora_buffer_v.data[:, historical_rank:rank].mul_(gates_v.unsqueeze(0))
 
             if basis_update_mode == "realized_drift":
+                if importance_aware_consolidation:
+                    merged_k = self._delta_weight(self.lora_basis_k, self.lora_memory_k, self.lora_buffer_k, False)
+                    merged_v = self._delta_weight(self.lora_basis_v, self.lora_memory_v, self.lora_buffer_v, False)
+                    merged_k = merged_k + gamma * (self.lora_buffer_k[:, :rank] @ self.lora_basis_k[:rank, :])
+                    merged_v = merged_v + gamma * (self.lora_buffer_v[:, :rank] @ self.lora_basis_v[:rank, :])
+
+                    new_rank_k = self._importance_aware_branch_consolidation(
+                        self.lora_basis_k,
+                        self.lora_memory_k,
+                        self.lora_buffer_k,
+                        self.importance_k,
+                        self.importance_max_k,
+                        historical_rank,
+                        merged_k,
+                        novelty_threshold,
+                        protected_slots,
+                    )
+                    new_rank_v = self._importance_aware_branch_consolidation(
+                        self.lora_basis_v,
+                        self.lora_memory_v,
+                        self.lora_buffer_v,
+                        self.importance_v,
+                        self.importance_max_v,
+                        historical_rank,
+                        merged_v,
+                        novelty_threshold,
+                        protected_slots,
+                    )
+                    self.active_rank = min(self.max_rank, max(new_rank_k, new_rank_v))
+                    self.lora_buffer_k.data.zero_()
+                    self.lora_buffer_v.data.zero_()
+                    if self.enforce_rank_budget and self.active_rank > self.rank_budget:
+                        self._prune()
+                    return
+
                 if historical_rank > 0:
                     self.lora_memory_k.data[:, :historical_rank] += gamma * self.lora_buffer_k.data[:, :historical_rank]
                     self.lora_memory_v.data[:, :historical_rank] += gamma * self.lora_buffer_v.data[:, :historical_rank]

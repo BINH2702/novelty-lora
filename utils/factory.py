@@ -19,6 +19,7 @@ def get_model(method, args):
                'novelty_lora': NoveltyLoRA,
                'directional_lora': DirectionalLoRA,
                'dir_fis_lora': DirFisLoRA,
+               'dfsc_ia': DirFisLoRA,
                }
     return options[name](args)
 

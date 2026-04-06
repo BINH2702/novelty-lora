@@ -199,6 +199,9 @@ class Net(nn.Module):
         conflict_gate_floor=0.0,
         basis_update_mode="warmup_gradient",
         novelty_threshold=0.0,
+        importance_aware_consolidation=False,
+        protected_slots=0,
+        protected_slots_ratio=0.0,
     ):
         for module_idx, module in enumerate(self.iter_attention_modules()):
             historical_rank = None if historical_rank_map is None else historical_rank_map.get(module_idx)
@@ -209,6 +212,9 @@ class Net(nn.Module):
                 conflict_gate_floor=conflict_gate_floor,
                 basis_update_mode=basis_update_mode,
                 novelty_threshold=novelty_threshold,
+                importance_aware_consolidation=importance_aware_consolidation,
+                protected_slots=protected_slots,
+                protected_slots_ratio=protected_slots_ratio,
             )
 
     def update_importance(self, fisher_values, decay, floor_frac=0.0):
