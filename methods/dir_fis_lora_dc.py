@@ -152,13 +152,11 @@ class DirFisLoRADC(DirFisLoRA):
 
     @staticmethod
     def _apply_head_affine(logits, scale, bias, head_width):
-        calibrated = logits.clone()
+        bsz = logits.size(0)
         num_heads = scale.numel()
-        for head_idx in range(num_heads):
-            start = head_idx * head_width
-            end = start + head_width
-            calibrated[:, start:end] = calibrated[:, start:end] * scale[head_idx] + bias[head_idx]
-        return calibrated
+        view = logits.view(bsz, num_heads, head_width)
+        calibrated = view * scale.view(1, num_heads, 1) + bias.view(1, num_heads, 1)
+        return calibrated.reshape(bsz, num_heads * head_width)
 
 
 def _as_bool(value, default=False):
