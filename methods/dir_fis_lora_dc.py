@@ -26,6 +26,10 @@ class DirFisLoRADC(DirFisLoRA):
         self.dc_reg = max(0.0, _as_float(args.get("decision_consolidation_reg", 1e-3), default=1e-3))
         self.dc_scale_min = max(0.05, _as_float(args.get("decision_scale_min", 0.5), default=0.5))
         self.dc_scale_max = max(self.dc_scale_min, _as_float(args.get("decision_scale_max", 1.5), default=1.5))
+        self.dc_bias_min = _as_float(args.get("decision_bias_min", -0.05), default=-0.05)
+        self.dc_bias_max = _as_float(args.get("decision_bias_max", 0.05), default=0.05)
+        if self.dc_bias_min > self.dc_bias_max:
+            self.dc_bias_min, self.dc_bias_max = self.dc_bias_max, self.dc_bias_min
         self.dc_max_batches = _as_optional_int(args.get("decision_consolidation_max_batches"), default=20)
         self.dc_guardrail_enabled = _as_bool(args.get("decision_guardrail_enabled", True), default=True)
         self.dc_guard_scale_delta = max(
@@ -141,9 +145,9 @@ class DirFisLoRADC(DirFisLoRA):
                         [base_logits[:, :head_start], current_cal, base_logits[:, head_end:]],
                         dim=1,
                     )
-                    # Preserve old-head distribution while calibrating the current head.
-                    log_p = F.log_softmax(cal_logits / self.dc_tau, dim=1)[:, :old_classes]
-                    q = F.softmax(base_logits / self.dc_tau, dim=1)[:, :old_classes]
+                    # Preserve global decision distribution while calibrating the current head.
+                    log_p = F.log_softmax(cal_logits / self.dc_tau, dim=1)
+                    q = F.softmax(base_logits / self.dc_tau, dim=1)
                     loss_kd = F.kl_div(log_p, q, reduction="batchmean") * (self.dc_tau ** 2)
                     loss = loss + self.dc_kd_weight * loss_kd
 
@@ -156,13 +160,14 @@ class DirFisLoRADC(DirFisLoRA):
 
                 with torch.no_grad():
                     scale.clamp_(self.dc_scale_min, self.dc_scale_max)
+                    bias.clamp_(self.dc_bias_min, self.dc_bias_max)
 
                 if self.debug:
                     break
 
         with torch.no_grad():
             final_scale = float(scale.detach().clamp(self.dc_scale_min, self.dc_scale_max).item())
-            final_bias = float(bias.detach().item())
+            final_bias = float(bias.detach().clamp(self.dc_bias_min, self.dc_bias_max).item())
 
         proxy = self._estimate_dc_proxy(
             model=model,
@@ -280,8 +285,8 @@ class DirFisLoRADC(DirFisLoRA):
                         [base_logits[:, :head_start], current_cal, base_logits[:, head_end:]],
                         dim=1,
                     )
-                    log_p = F.log_softmax(cal_logits / self.dc_tau, dim=1)[:, :old_classes]
-                    q = F.softmax(base_logits / self.dc_tau, dim=1)[:, :old_classes]
+                    log_p = F.log_softmax(cal_logits / self.dc_tau, dim=1)
+                    q = F.softmax(base_logits / self.dc_tau, dim=1)
                     old_kd += float((F.kl_div(log_p, q, reduction="batchmean") * (self.dc_tau ** 2)).item())
 
                 used_batches += 1

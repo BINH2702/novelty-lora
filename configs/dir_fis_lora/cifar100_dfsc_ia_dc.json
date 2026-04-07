@@ -61,6 +61,8 @@
     "decision_consolidation_reg" : 0.05,
     "decision_scale_min" : 0.9,
     "decision_scale_max" : 1.1,
+    "decision_bias_min" : -0.003,
+    "decision_bias_max" : 0.003,
     "decision_consolidation_max_batches" : 10,
     "decision_guardrail_enabled" : true,
     "decision_guard_max_scale_delta" : 0.08,
