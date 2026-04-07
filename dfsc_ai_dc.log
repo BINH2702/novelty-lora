@@ -1,0 +1,1090 @@
+2026-04-06 16:56:27,278 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-06 16:56:27,279 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-06 16:56:27,279 [toolkit.py] => debug: False
+2026-04-06 16:56:27,279 [toolkit.py] => save_ckp: False
+2026-04-06 16:56:27,279 [toolkit.py] => seed: 0
+2026-04-06 16:56:27,279 [toolkit.py] => dataset: cifar100
+2026-04-06 16:56:27,279 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-06 16:56:27,279 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-06 16:56:27,279 [toolkit.py] => init_cls: 10
+2026-04-06 16:56:27,279 [toolkit.py] => increment: 10
+2026-04-06 16:56:27,279 [toolkit.py] => sessions: 10
+2026-04-06 16:56:27,279 [toolkit.py] => shuffle: False
+2026-04-06 16:56:27,279 [toolkit.py] => method: dfsc_ia_dc
+2026-04-06 16:56:27,279 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-06 16:56:27,279 [toolkit.py] => optimizer: adam
+2026-04-06 16:56:27,279 [toolkit.py] => scheduler: cosine
+2026-04-06 16:56:27,279 [toolkit.py] => epochs: 20
+2026-04-06 16:56:27,279 [toolkit.py] => lrate: 0.0005
+2026-04-06 16:56:27,279 [toolkit.py] => fc_lrate: 0.005
+2026-04-06 16:56:27,279 [toolkit.py] => weight_decay: 0.0
+2026-04-06 16:56:27,279 [toolkit.py] => batch_size: 128
+2026-04-06 16:56:27,279 [toolkit.py] => rank: 10
+2026-04-06 16:56:27,279 [toolkit.py] => rank_budget: 10
+2026-04-06 16:56:27,279 [toolkit.py] => max_rank: 20
+2026-04-06 16:56:27,279 [toolkit.py] => grow_rank: 2
+2026-04-06 16:56:27,279 [toolkit.py] => task_rank: 10
+2026-04-06 16:56:27,279 [toolkit.py] => warmup_batches: 1
+2026-04-06 16:56:27,279 [toolkit.py] => basis_growth_batches: 10
+2026-04-06 16:56:27,279 [toolkit.py] => num_workers: 4
+2026-04-06 16:56:27,279 [toolkit.py] => gamma: 1.0
+2026-04-06 16:56:27,279 [toolkit.py] => importance_decay: 0.9
+2026-04-06 16:56:27,279 [toolkit.py] => lambda: 1000.0
+2026-04-06 16:56:27,279 [toolkit.py] => novelty_threshold: 0.0
+2026-04-06 16:56:27,279 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-06 16:56:27,279 [toolkit.py] => reg_alpha: 1.0
+2026-04-06 16:56:27,279 [toolkit.py] => reg_w_tau: 0.5
+2026-04-06 16:56:27,279 [toolkit.py] => reg_w_max: 5.0
+2026-04-06 16:56:27,279 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-06 16:56:27,279 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_adaptive: True
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_probe_batches: 2
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-06 16:56:27,279 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-06 16:56:27,279 [toolkit.py] => importance_aware_consolidation: True
+2026-04-06 16:56:27,279 [toolkit.py] => protected_slots: 2
+2026-04-06 16:56:27,279 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-06 16:56:27,279 [toolkit.py] => importance_transport: True
+2026-04-06 16:56:27,279 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-06 16:56:27,279 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-06 16:56:27,279 [toolkit.py] => decision_consolidation_lr: 0.01
+2026-04-06 16:56:27,280 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-06 16:56:27,280 [toolkit.py] => decision_consolidation_kd_weight: 0.5
+2026-04-06 16:56:27,280 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-06 16:56:27,280 [toolkit.py] => decision_consolidation_reg: 0.001
+2026-04-06 16:56:27,280 [toolkit.py] => decision_scale_min: 0.5
+2026-04-06 16:56:27,280 [toolkit.py] => decision_scale_max: 1.5
+2026-04-06 16:56:27,280 [toolkit.py] => decision_consolidation_max_batches: 20
+2026-04-06 16:56:27,280 [toolkit.py] => conflict_gate_enabled: False
+2026-04-06 16:56:27,280 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-06 16:56:27,280 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-06 16:56:27,280 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-06 16:56:27,280 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-06 16:56:28,563 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-06 16:56:30,024 [trainer.py] => Running 10/10 tasks
+2026-04-06 16:56:30,024 [trainer.py] => ================================================================================
+2026-04-06 16:56:30,034 [base.py] => Task 0 learning on class 0-10
+2026-04-06 16:56:30,593 [toolkit.py] => Total params:     104,147,383
+2026-04-06 16:56:30,593 [toolkit.py] => Trainable params: 376,330
+2026-04-06 16:56:30,593 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:01:00,823 [dir_fis_lora.py] => Task 0, Epoch 20/20 => Loss 0.096, Train_accy 96.68
+2026-04-06 17:01:00,824 [trainer.py] => Training time: 0h 4m 30s
+2026-04-06 17:01:02,515 [trainer.py] => Evaluation time: 0h 0m 1s
+2026-04-06 17:01:04,342 [dir_fis_lora_dc.py] => Task 0 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:01:17,436 [trainer.py] => Accuracy: {'total': np.float64(99.5), '00-09': np.float64(99.5), 'old': 0, 'new': np.float64(99.5)}
+2026-04-06 17:01:17,436 [trainer.py] => (curve) top1 Acc: [np.float64(99.5)]
+2026-04-06 17:01:17,436 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5)]
+2026-04-06 17:01:17,436 [trainer.py] => (curve) top1 Acc task: [1.0]
+2026-04-06 17:01:17,436 [trainer.py] => ================================================================================
+2026-04-06 17:01:17,436 [trainer.py] => ================================================================================
+2026-04-06 17:01:17,449 [base.py] => Task 1 learning on class 10-20
+2026-04-06 17:01:17,452 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:01:17,452 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:01:17,452 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:05:57,036 [dir_fis_lora.py] => Task 1, Epoch 20/20 => Loss 0.123, Train_accy 95.58
+2026-04-06 17:05:57,037 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 17:05:59,981 [trainer.py] => Evaluation time: 0h 0m 2s
+2026-04-06 17:06:02,016 [dir_fis_lora_dc.py] => Task 1 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:06:02,016 [dir_fis_lora_dc.py] => Task 1 adaptive alpha => overlap 0.0171, alpha_t 0.5000
+2026-04-06 17:27:48,916 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-06 17:27:48,916 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-06 17:27:48,916 [toolkit.py] => debug: False
+2026-04-06 17:27:48,916 [toolkit.py] => save_ckp: False
+2026-04-06 17:27:48,916 [toolkit.py] => seed: 0
+2026-04-06 17:27:48,916 [toolkit.py] => dataset: cifar100
+2026-04-06 17:27:48,916 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-06 17:27:48,916 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-06 17:27:48,916 [toolkit.py] => init_cls: 10
+2026-04-06 17:27:48,916 [toolkit.py] => increment: 10
+2026-04-06 17:27:48,916 [toolkit.py] => sessions: 10
+2026-04-06 17:27:48,916 [toolkit.py] => shuffle: False
+2026-04-06 17:27:48,916 [toolkit.py] => method: dfsc_ia_dc
+2026-04-06 17:27:48,916 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-06 17:27:48,916 [toolkit.py] => optimizer: adam
+2026-04-06 17:27:48,916 [toolkit.py] => scheduler: cosine
+2026-04-06 17:27:48,916 [toolkit.py] => epochs: 20
+2026-04-06 17:27:48,916 [toolkit.py] => lrate: 0.0005
+2026-04-06 17:27:48,916 [toolkit.py] => fc_lrate: 0.005
+2026-04-06 17:27:48,916 [toolkit.py] => weight_decay: 0.0
+2026-04-06 17:27:48,916 [toolkit.py] => batch_size: 128
+2026-04-06 17:27:48,917 [toolkit.py] => rank: 10
+2026-04-06 17:27:48,917 [toolkit.py] => rank_budget: 10
+2026-04-06 17:27:48,917 [toolkit.py] => max_rank: 20
+2026-04-06 17:27:48,917 [toolkit.py] => grow_rank: 2
+2026-04-06 17:27:48,917 [toolkit.py] => task_rank: 10
+2026-04-06 17:27:48,917 [toolkit.py] => warmup_batches: 1
+2026-04-06 17:27:48,917 [toolkit.py] => basis_growth_batches: 10
+2026-04-06 17:27:48,917 [toolkit.py] => num_workers: 4
+2026-04-06 17:27:48,917 [toolkit.py] => gamma: 1.0
+2026-04-06 17:27:48,917 [toolkit.py] => importance_decay: 0.9
+2026-04-06 17:27:48,917 [toolkit.py] => lambda: 1000.0
+2026-04-06 17:27:48,917 [toolkit.py] => novelty_threshold: 0.0
+2026-04-06 17:27:48,917 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-06 17:27:48,917 [toolkit.py] => reg_alpha: 1.0
+2026-04-06 17:27:48,917 [toolkit.py] => reg_w_tau: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => reg_w_max: 5.0
+2026-04-06 17:27:48,917 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-06 17:27:48,917 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_adaptive: True
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_probe_batches: 2
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-06 17:27:48,917 [toolkit.py] => importance_aware_consolidation: True
+2026-04-06 17:27:48,917 [toolkit.py] => protected_slots: 2
+2026-04-06 17:27:48,917 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-06 17:27:48,917 [toolkit.py] => importance_transport: True
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_lr: 0.01
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_kd_weight: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_reg: 0.001
+2026-04-06 17:27:48,917 [toolkit.py] => decision_scale_min: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => decision_scale_max: 1.5
+2026-04-06 17:27:48,917 [toolkit.py] => decision_consolidation_max_batches: 20
+2026-04-06 17:27:48,917 [toolkit.py] => conflict_gate_enabled: False
+2026-04-06 17:27:48,917 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-06 17:27:48,917 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-06 17:27:48,917 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-06 17:27:48,917 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-06 17:27:50,639 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-06 17:27:52,696 [trainer.py] => Running 10/10 tasks
+2026-04-06 17:27:52,697 [trainer.py] => ================================================================================
+2026-04-06 17:27:52,718 [base.py] => Task 0 learning on class 0-10
+2026-04-06 17:27:53,350 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:27:53,351 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:27:53,351 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:32:23,549 [dir_fis_lora.py] => Task 0, Epoch 20/20 => Loss 0.096, Train_accy 96.68
+2026-04-06 17:32:23,550 [trainer.py] => Training time: 0h 4m 30s
+2026-04-06 17:32:25,145 [trainer.py] => Evaluation time: 0h 0m 1s
+2026-04-06 17:32:26,964 [dir_fis_lora_dc.py] => Task 0 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:32:40,045 [trainer.py] => Accuracy: {'total': np.float64(99.5), '00-09': np.float64(99.5), 'old': 0, 'new': np.float64(99.5)}
+2026-04-06 17:32:40,045 [trainer.py] => (curve) top1 Acc: [np.float64(99.5)]
+2026-04-06 17:32:40,045 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5)]
+2026-04-06 17:32:40,045 [trainer.py] => (curve) top1 Acc task: [1.0]
+2026-04-06 17:32:40,045 [trainer.py] => ================================================================================
+2026-04-06 17:32:40,045 [trainer.py] => ================================================================================
+2026-04-06 17:32:40,058 [base.py] => Task 1 learning on class 10-20
+2026-04-06 17:32:40,060 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:32:40,060 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:32:40,060 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:37:19,790 [dir_fis_lora.py] => Task 1, Epoch 20/20 => Loss 0.123, Train_accy 95.58
+2026-04-06 17:37:19,791 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 17:37:22,738 [trainer.py] => Evaluation time: 0h 0m 2s
+2026-04-06 17:37:24,764 [dir_fis_lora_dc.py] => Task 1 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:37:24,764 [dir_fis_lora_dc.py] => Task 1 adaptive alpha => overlap 0.0171, alpha_t 0.5000
+2026-04-06 17:37:41,232 [dir_fis_lora_dc.py] => Task 1 decision consolidation => heads 2, scale_mean 0.9796, scale_min 0.8293, scale_max 1.1299
+2026-04-06 17:37:41,238 [trainer.py] => Accuracy: {'total': np.float64(96.6), '00-09': np.float64(95.4), '10-19': np.float64(97.8), 'old': np.float64(95.4), 'new': np.float64(97.8)}
+2026-04-06 17:37:41,238 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6)]
+2026-04-06 17:37:41,238 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25)]
+2026-04-06 17:37:41,238 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97]
+2026-04-06 17:37:41,238 [trainer.py] => ================================================================================
+2026-04-06 17:37:41,238 [trainer.py] => ================================================================================
+2026-04-06 17:37:41,250 [base.py] => Task 2 learning on class 20-30
+2026-04-06 17:37:41,253 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:37:41,253 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:37:41,253 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:42:20,721 [dir_fis_lora.py] => Task 2, Epoch 20/20 => Loss 0.140, Train_accy 95.66
+2026-04-06 17:42:20,722 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 17:42:24,954 [trainer.py] => Evaluation time: 0h 0m 4s
+2026-04-06 17:42:27,029 [dir_fis_lora_dc.py] => Task 2 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:42:27,029 [dir_fis_lora_dc.py] => Task 2 adaptive alpha => overlap 0.0292, alpha_t 0.5000
+2026-04-06 17:42:43,372 [dir_fis_lora_dc.py] => Task 2 decision consolidation => heads 3, scale_mean 0.9518, scale_min 0.8309, scale_max 1.1658
+2026-04-06 17:42:43,379 [trainer.py] => Accuracy: {'total': np.float64(90.9), '00-09': np.float64(81.1), '10-19': np.float64(97.0), '20-29': np.float64(94.6), 'old': np.float64(89.05), 'new': np.float64(94.6)}
+2026-04-06 17:42:43,379 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9)]
+2026-04-06 17:42:43,379 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4)]
+2026-04-06 17:42:43,379 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666]
+2026-04-06 17:42:43,379 [trainer.py] => ================================================================================
+2026-04-06 17:42:43,379 [trainer.py] => ================================================================================
+2026-04-06 17:42:43,390 [base.py] => Task 3 learning on class 30-40
+2026-04-06 17:42:43,393 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:42:43,393 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:42:43,393 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:47:23,274 [dir_fis_lora.py] => Task 3, Epoch 20/20 => Loss 0.116, Train_accy 96.18
+2026-04-06 17:47:23,275 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 17:47:28,722 [trainer.py] => Evaluation time: 0h 0m 5s
+2026-04-06 17:47:30,798 [dir_fis_lora_dc.py] => Task 3 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:47:30,798 [dir_fis_lora_dc.py] => Task 3 adaptive alpha => overlap 0.0509, alpha_t 0.5000
+2026-04-06 17:47:47,114 [dir_fis_lora_dc.py] => Task 3 decision consolidation => heads 4, scale_mean 0.9251, scale_min 0.8418, scale_max 1.1570
+2026-04-06 17:47:47,121 [trainer.py] => Accuracy: {'total': np.float64(88.4), '00-09': np.float64(74.0), '10-19': np.float64(91.9), '20-29': np.float64(95.1), '30-39': np.float64(92.6), 'old': np.float64(87.0), 'new': np.float64(92.6)}
+2026-04-06 17:47:47,121 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4)]
+2026-04-06 17:47:47,121 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32)]
+2026-04-06 17:47:47,121 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225]
+2026-04-06 17:47:47,121 [trainer.py] => ================================================================================
+2026-04-06 17:47:47,121 [trainer.py] => ================================================================================
+2026-04-06 17:47:47,128 [base.py] => Task 4 learning on class 40-50
+2026-04-06 17:47:47,131 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:47:47,131 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:47:47,131 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:52:27,176 [dir_fis_lora.py] => Task 4, Epoch 20/20 => Loss 0.105, Train_accy 96.52
+2026-04-06 17:52:27,177 [trainer.py] => Training time: 0h 4m 40s
+2026-04-06 17:52:33,899 [trainer.py] => Evaluation time: 0h 0m 6s
+2026-04-06 17:52:35,967 [dir_fis_lora_dc.py] => Task 4 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:52:35,968 [dir_fis_lora_dc.py] => Task 4 adaptive alpha => overlap 0.0547, alpha_t 0.5000
+2026-04-06 17:52:52,294 [dir_fis_lora_dc.py] => Task 4 decision consolidation => heads 5, scale_mean 0.8939, scale_min 0.8164, scale_max 1.1740
+2026-04-06 17:52:52,299 [trainer.py] => Accuracy: {'total': np.float64(85.04), '00-09': np.float64(61.6), '10-19': np.float64(81.8), '20-29': np.float64(90.8), '30-39': np.float64(95.7), '40-49': np.float64(95.3), 'old': np.float64(82.48), 'new': np.float64(95.3)}
+2026-04-06 17:52:52,299 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04)]
+2026-04-06 17:52:52,299 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56)]
+2026-04-06 17:52:52,299 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857]
+2026-04-06 17:52:52,299 [trainer.py] => ================================================================================
+2026-04-06 17:52:52,299 [trainer.py] => ================================================================================
+2026-04-06 17:52:52,308 [base.py] => Task 5 learning on class 50-60
+2026-04-06 17:52:52,311 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:52:52,311 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:52:52,311 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 17:57:31,066 [dir_fis_lora.py] => Task 5, Epoch 20/20 => Loss 0.112, Train_accy 95.84
+2026-04-06 17:57:31,067 [trainer.py] => Training time: 0h 4m 38s
+2026-04-06 17:57:38,879 [trainer.py] => Evaluation time: 0h 0m 7s
+2026-04-06 17:57:40,940 [dir_fis_lora_dc.py] => Task 5 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 17:57:40,940 [dir_fis_lora_dc.py] => Task 5 adaptive alpha => overlap 0.0608, alpha_t 0.5000
+2026-04-06 17:57:57,261 [dir_fis_lora_dc.py] => Task 5 decision consolidation => heads 6, scale_mean 0.8772, scale_min 0.8085, scale_max 1.1683
+2026-04-06 17:57:57,267 [trainer.py] => Accuracy: {'total': np.float64(78.95), '00-09': np.float64(40.9), '10-19': np.float64(75.9), '20-29': np.float64(84.1), '30-39': np.float64(91.1), '40-49': np.float64(96.5), '50-59': np.float64(85.2), 'old': np.float64(77.7), 'new': np.float64(85.2)}
+2026-04-06 17:57:57,267 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04), np.float64(78.95)]
+2026-04-06 17:57:57,267 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56), np.float64(98.15)]
+2026-04-06 17:57:57,267 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857, 0.7951666666666667]
+2026-04-06 17:57:57,267 [trainer.py] => ================================================================================
+2026-04-06 17:57:57,267 [trainer.py] => ================================================================================
+2026-04-06 17:57:57,274 [base.py] => Task 6 learning on class 60-70
+2026-04-06 17:57:57,276 [toolkit.py] => Total params:     104,147,383
+2026-04-06 17:57:57,277 [toolkit.py] => Trainable params: 376,330
+2026-04-06 17:57:57,277 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 18:02:35,979 [dir_fis_lora.py] => Task 6, Epoch 20/20 => Loss 0.126, Train_accy 95.88
+2026-04-06 18:02:35,981 [trainer.py] => Training time: 0h 4m 38s
+2026-04-06 18:02:45,001 [trainer.py] => Evaluation time: 0h 0m 9s
+2026-04-06 18:02:47,099 [dir_fis_lora_dc.py] => Task 6 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 18:02:47,099 [dir_fis_lora_dc.py] => Task 6 adaptive alpha => overlap 0.0598, alpha_t 0.5000
+2026-04-06 18:03:03,472 [dir_fis_lora_dc.py] => Task 6 decision consolidation => heads 7, scale_mean 0.8805, scale_min 0.8209, scale_max 1.1780
+2026-04-06 18:03:03,478 [trainer.py] => Accuracy: {'total': np.float64(74.37), '00-09': np.float64(25.8), '10-19': np.float64(63.2), '20-29': np.float64(70.8), '30-39': np.float64(85.3), '40-49': np.float64(90.8), '50-59': np.float64(92.2), '60-69': np.float64(92.5), 'old': np.float64(71.35), 'new': np.float64(92.5)}
+2026-04-06 18:03:03,478 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04), np.float64(78.95), np.float64(74.37)]
+2026-04-06 18:03:03,478 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56), np.float64(98.15), np.float64(97.96)]
+2026-04-06 18:03:03,478 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857, 0.7951666666666667, 0.75]
+2026-04-06 18:03:03,478 [trainer.py] => ================================================================================
+2026-04-06 18:03:03,478 [trainer.py] => ================================================================================
+2026-04-06 18:03:03,488 [base.py] => Task 7 learning on class 70-80
+2026-04-06 18:03:03,491 [toolkit.py] => Total params:     104,147,383
+2026-04-06 18:03:03,491 [toolkit.py] => Trainable params: 376,330
+2026-04-06 18:03:03,491 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 18:07:42,878 [dir_fis_lora.py] => Task 7, Epoch 20/20 => Loss 0.115, Train_accy 96.08
+2026-04-06 18:07:42,879 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 18:07:53,235 [trainer.py] => Evaluation time: 0h 0m 10s
+2026-04-06 18:07:55,299 [dir_fis_lora_dc.py] => Task 7 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 18:07:55,299 [dir_fis_lora_dc.py] => Task 7 adaptive alpha => overlap 0.0674, alpha_t 0.5000
+2026-04-06 18:08:11,581 [dir_fis_lora_dc.py] => Task 7 decision consolidation => heads 8, scale_mean 0.8912, scale_min 0.8181, scale_max 1.1784
+2026-04-06 18:08:11,587 [trainer.py] => Accuracy: {'total': np.float64(69.68), '00-09': np.float64(17.1), '10-19': np.float64(47.0), '20-29': np.float64(60.7), '30-39': np.float64(75.2), '40-49': np.float64(83.6), '50-59': np.float64(87.1), '60-69': np.float64(93.2), '70-79': np.float64(93.5), 'old': np.float64(66.27), 'new': np.float64(93.5)}
+2026-04-06 18:08:11,587 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04), np.float64(78.95), np.float64(74.37), np.float64(69.68)]
+2026-04-06 18:08:11,587 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56), np.float64(98.15), np.float64(97.96), np.float64(98.12)]
+2026-04-06 18:08:11,587 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857, 0.7951666666666667, 0.75, 0.703]
+2026-04-06 18:08:11,587 [trainer.py] => ================================================================================
+2026-04-06 18:08:11,587 [trainer.py] => ================================================================================
+2026-04-06 18:08:11,595 [base.py] => Task 8 learning on class 80-90
+2026-04-06 18:08:11,598 [toolkit.py] => Total params:     104,147,383
+2026-04-06 18:08:11,598 [toolkit.py] => Trainable params: 376,330
+2026-04-06 18:08:11,598 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 18:12:51,406 [dir_fis_lora.py] => Task 8, Epoch 20/20 => Loss 0.104, Train_accy 96.74
+2026-04-06 18:12:51,408 [trainer.py] => Training time: 0h 4m 39s
+2026-04-06 18:13:02,957 [trainer.py] => Evaluation time: 0h 0m 11s
+2026-04-06 18:13:05,029 [dir_fis_lora_dc.py] => Task 8 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 18:13:05,029 [dir_fis_lora_dc.py] => Task 8 adaptive alpha => overlap 0.0801, alpha_t 0.5000
+2026-04-06 18:13:21,343 [dir_fis_lora_dc.py] => Task 8 decision consolidation => heads 9, scale_mean 0.8845, scale_min 0.8258, scale_max 1.1669
+2026-04-06 18:13:21,349 [trainer.py] => Accuracy: {'total': np.float64(65.78), '00-09': np.float64(21.7), '10-19': np.float64(38.7), '20-29': np.float64(41.0), '30-39': np.float64(64.6), '40-49': np.float64(73.0), '50-59': np.float64(73.7), '60-69': np.float64(84.4), '70-79': np.float64(95.8), '80-89': np.float64(99.1), 'old': np.float64(61.61), 'new': np.float64(99.1)}
+2026-04-06 18:13:21,349 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04), np.float64(78.95), np.float64(74.37), np.float64(69.68), np.float64(65.78)]
+2026-04-06 18:13:21,349 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56), np.float64(98.15), np.float64(97.96), np.float64(98.12), np.float64(98.24)]
+2026-04-06 18:13:21,349 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857, 0.7951666666666667, 0.75, 0.703, 0.6608888888888889]
+2026-04-06 18:13:21,349 [trainer.py] => ================================================================================
+2026-04-06 18:13:21,349 [trainer.py] => ================================================================================
+2026-04-06 18:13:21,358 [base.py] => Task 9 learning on class 90-100
+2026-04-06 18:13:21,360 [toolkit.py] => Total params:     104,147,383
+2026-04-06 18:13:21,360 [toolkit.py] => Trainable params: 376,330
+2026-04-06 18:13:21,361 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-06 18:18:01,472 [dir_fis_lora.py] => Task 9, Epoch 20/20 => Loss 0.084, Train_accy 97.34
+2026-04-06 18:18:01,473 [trainer.py] => Training time: 0h 4m 40s
+2026-04-06 18:18:14,275 [trainer.py] => Evaluation time: 0h 0m 12s
+2026-04-06 18:18:16,337 [dir_fis_lora_dc.py] => Task 9 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-06 18:18:16,338 [dir_fis_lora_dc.py] => Task 9 adaptive alpha => overlap 0.0748, alpha_t 0.5000
+2026-04-06 18:18:32,665 [dir_fis_lora_dc.py] => Task 9 decision consolidation => heads 10, scale_mean 0.9382, scale_min 0.8289, scale_max 1.1548
+2026-04-06 18:18:32,671 [trainer.py] => Accuracy: {'total': np.float64(55.41), '00-09': np.float64(13.7), '10-19': np.float64(24.6), '20-29': np.float64(25.8), '30-39': np.float64(33.3), '40-49': np.float64(48.9), '50-59': np.float64(53.1), '60-69': np.float64(72.9), '70-79': np.float64(87.9), '80-89': np.float64(97.2), '90-99': np.float64(96.7), 'old': np.float64(50.82), 'new': np.float64(96.7)}
+2026-04-06 18:18:32,671 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(90.9), np.float64(88.4), np.float64(85.04), np.float64(78.95), np.float64(74.37), np.float64(69.68), np.float64(65.78), np.float64(55.41)]
+2026-04-06 18:18:32,671 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.4), np.float64(98.32), np.float64(98.56), np.float64(98.15), np.float64(97.96), np.float64(98.12), np.float64(98.24), np.float64(97.98)]
+2026-04-06 18:18:32,671 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9186666666666666, 0.89225, 0.857, 0.7951666666666667, 0.75, 0.703, 0.6608888888888889, 0.556]
+2026-04-06 18:18:32,671 [trainer.py] => ================================================================================
+2026-04-07 02:40:54,146 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-07 02:40:54,146 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-07 02:40:54,146 [toolkit.py] => debug: False
+2026-04-07 02:40:54,146 [toolkit.py] => save_ckp: False
+2026-04-07 02:40:54,146 [toolkit.py] => seed: 0
+2026-04-07 02:40:54,146 [toolkit.py] => dataset: cifar100
+2026-04-07 02:40:54,146 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-07 02:40:54,146 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-07 02:40:54,146 [toolkit.py] => init_cls: 10
+2026-04-07 02:40:54,146 [toolkit.py] => increment: 10
+2026-04-07 02:40:54,146 [toolkit.py] => sessions: 10
+2026-04-07 02:40:54,146 [toolkit.py] => shuffle: False
+2026-04-07 02:40:54,146 [toolkit.py] => method: dfsc_ia_dc
+2026-04-07 02:40:54,146 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-07 02:40:54,146 [toolkit.py] => optimizer: adam
+2026-04-07 02:40:54,146 [toolkit.py] => scheduler: cosine
+2026-04-07 02:40:54,146 [toolkit.py] => epochs: 20
+2026-04-07 02:40:54,146 [toolkit.py] => lrate: 0.0005
+2026-04-07 02:40:54,146 [toolkit.py] => fc_lrate: 0.005
+2026-04-07 02:40:54,146 [toolkit.py] => weight_decay: 0.0
+2026-04-07 02:40:54,146 [toolkit.py] => batch_size: 128
+2026-04-07 02:40:54,146 [toolkit.py] => rank: 10
+2026-04-07 02:40:54,147 [toolkit.py] => rank_budget: 10
+2026-04-07 02:40:54,147 [toolkit.py] => max_rank: 20
+2026-04-07 02:40:54,147 [toolkit.py] => grow_rank: 2
+2026-04-07 02:40:54,147 [toolkit.py] => task_rank: 10
+2026-04-07 02:40:54,147 [toolkit.py] => warmup_batches: 1
+2026-04-07 02:40:54,147 [toolkit.py] => basis_growth_batches: 10
+2026-04-07 02:40:54,147 [toolkit.py] => num_workers: 4
+2026-04-07 02:40:54,147 [toolkit.py] => gamma: 1.0
+2026-04-07 02:40:54,147 [toolkit.py] => importance_decay: 0.9
+2026-04-07 02:40:54,147 [toolkit.py] => lambda: 1000.0
+2026-04-07 02:40:54,147 [toolkit.py] => novelty_threshold: 0.0
+2026-04-07 02:40:54,147 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-07 02:40:54,147 [toolkit.py] => reg_alpha: 1.0
+2026-04-07 02:40:54,147 [toolkit.py] => reg_w_tau: 0.5
+2026-04-07 02:40:54,147 [toolkit.py] => reg_w_max: 5.0
+2026-04-07 02:40:54,147 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-07 02:40:54,147 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_adaptive: True
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_probe_batches: 2
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-07 02:40:54,147 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-07 02:40:54,147 [toolkit.py] => importance_aware_consolidation: True
+2026-04-07 02:40:54,147 [toolkit.py] => protected_slots: 2
+2026-04-07 02:40:54,147 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-07 02:40:54,147 [toolkit.py] => importance_transport: True
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_lr: 0.001
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_kd_weight: 1.5
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_reg: 0.05
+2026-04-07 02:40:54,147 [toolkit.py] => decision_scale_min: 0.9
+2026-04-07 02:40:54,147 [toolkit.py] => decision_scale_max: 1.1
+2026-04-07 02:40:54,147 [toolkit.py] => decision_consolidation_max_batches: 10
+2026-04-07 02:40:54,147 [toolkit.py] => decision_guardrail_enabled: True
+2026-04-07 02:40:54,147 [toolkit.py] => decision_guard_max_scale_delta: 0.08
+2026-04-07 02:40:54,147 [toolkit.py] => decision_guard_max_bias_abs: 0.25
+2026-04-07 02:40:54,147 [toolkit.py] => decision_guard_ce_tolerance: 0.02
+2026-04-07 02:40:54,147 [toolkit.py] => decision_guard_eval_batches: 10
+2026-04-07 02:40:54,147 [toolkit.py] => conflict_gate_enabled: False
+2026-04-07 02:40:54,147 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-07 02:40:54,147 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-07 02:40:54,147 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-07 02:40:54,147 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-07 02:40:55,469 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-07 02:41:17,799 [trainer.py] => Running 10/10 tasks
+2026-04-07 02:41:17,800 [trainer.py] => ================================================================================
+2026-04-07 02:41:18,005 [base.py] => Task 0 learning on class 0-10
+2026-04-07 02:45:52,906 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-07 02:45:52,906 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-07 02:45:52,906 [toolkit.py] => debug: False
+2026-04-07 02:45:52,906 [toolkit.py] => save_ckp: False
+2026-04-07 02:45:52,906 [toolkit.py] => seed: 0
+2026-04-07 02:45:52,906 [toolkit.py] => dataset: cifar100
+2026-04-07 02:45:52,906 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-07 02:45:52,906 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-07 02:45:52,906 [toolkit.py] => init_cls: 10
+2026-04-07 02:45:52,906 [toolkit.py] => increment: 10
+2026-04-07 02:45:52,906 [toolkit.py] => sessions: 10
+2026-04-07 02:45:52,906 [toolkit.py] => shuffle: False
+2026-04-07 02:45:52,906 [toolkit.py] => method: dfsc_ia_dc
+2026-04-07 02:45:52,906 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-07 02:45:52,906 [toolkit.py] => optimizer: adam
+2026-04-07 02:45:52,906 [toolkit.py] => scheduler: cosine
+2026-04-07 02:45:52,906 [toolkit.py] => epochs: 20
+2026-04-07 02:45:52,906 [toolkit.py] => lrate: 0.0005
+2026-04-07 02:45:52,906 [toolkit.py] => fc_lrate: 0.005
+2026-04-07 02:45:52,906 [toolkit.py] => weight_decay: 0.0
+2026-04-07 02:45:52,906 [toolkit.py] => batch_size: 128
+2026-04-07 02:45:52,906 [toolkit.py] => rank: 10
+2026-04-07 02:45:52,906 [toolkit.py] => rank_budget: 10
+2026-04-07 02:45:52,906 [toolkit.py] => max_rank: 20
+2026-04-07 02:45:52,906 [toolkit.py] => grow_rank: 2
+2026-04-07 02:45:52,906 [toolkit.py] => task_rank: 10
+2026-04-07 02:45:52,906 [toolkit.py] => warmup_batches: 1
+2026-04-07 02:45:52,906 [toolkit.py] => basis_growth_batches: 10
+2026-04-07 02:45:52,906 [toolkit.py] => num_workers: 4
+2026-04-07 02:45:52,906 [toolkit.py] => gamma: 1.0
+2026-04-07 02:45:52,906 [toolkit.py] => importance_decay: 0.9
+2026-04-07 02:45:52,906 [toolkit.py] => lambda: 1000.0
+2026-04-07 02:45:52,907 [toolkit.py] => novelty_threshold: 0.0
+2026-04-07 02:45:52,907 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-07 02:45:52,907 [toolkit.py] => reg_alpha: 1.0
+2026-04-07 02:45:52,907 [toolkit.py] => reg_w_tau: 0.5
+2026-04-07 02:45:52,907 [toolkit.py] => reg_w_max: 5.0
+2026-04-07 02:45:52,907 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-07 02:45:52,907 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_adaptive: True
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_probe_batches: 2
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-07 02:45:52,907 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-07 02:45:52,907 [toolkit.py] => importance_aware_consolidation: True
+2026-04-07 02:45:52,907 [toolkit.py] => protected_slots: 2
+2026-04-07 02:45:52,907 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-07 02:45:52,907 [toolkit.py] => importance_transport: True
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_lr: 0.001
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_kd_weight: 1.5
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_reg: 0.05
+2026-04-07 02:45:52,907 [toolkit.py] => decision_scale_min: 0.9
+2026-04-07 02:45:52,907 [toolkit.py] => decision_scale_max: 1.1
+2026-04-07 02:45:52,907 [toolkit.py] => decision_consolidation_max_batches: 10
+2026-04-07 02:45:52,907 [toolkit.py] => decision_guardrail_enabled: True
+2026-04-07 02:45:52,907 [toolkit.py] => decision_guard_max_scale_delta: 0.08
+2026-04-07 02:45:52,907 [toolkit.py] => decision_guard_max_bias_abs: 0.25
+2026-04-07 02:45:52,907 [toolkit.py] => decision_guard_ce_tolerance: 0.02
+2026-04-07 02:45:52,907 [toolkit.py] => decision_guard_eval_batches: 10
+2026-04-07 02:45:52,907 [toolkit.py] => conflict_gate_enabled: False
+2026-04-07 02:45:52,907 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-07 02:45:52,907 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-07 02:45:52,907 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-07 02:45:52,907 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-07 02:45:54,204 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-07 02:45:55,581 [trainer.py] => Running 10/10 tasks
+2026-04-07 02:45:55,581 [trainer.py] => ================================================================================
+2026-04-07 02:45:55,586 [base.py] => Task 0 learning on class 0-10
+2026-04-07 02:45:56,228 [toolkit.py] => Total params:     104,147,383
+2026-04-07 02:45:56,229 [toolkit.py] => Trainable params: 376,330
+2026-04-07 02:45:56,229 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 02:50:25,920 [dir_fis_lora.py] => Task 0, Epoch 20/20 => Loss 0.096, Train_accy 96.68
+2026-04-07 02:50:25,921 [trainer.py] => Training time: 0h 4m 30s
+2026-04-07 02:50:27,544 [trainer.py] => Evaluation time: 0h 0m 1s
+2026-04-07 02:50:29,357 [dir_fis_lora_dc.py] => Task 0 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 02:50:42,351 [trainer.py] => Accuracy: {'total': np.float64(99.5), '00-09': np.float64(99.5), 'old': 0, 'new': np.float64(99.5)}
+2026-04-07 02:50:42,351 [trainer.py] => (curve) top1 Acc: [np.float64(99.5)]
+2026-04-07 02:50:42,351 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5)]
+2026-04-07 02:50:42,351 [trainer.py] => (curve) top1 Acc task: [1.0]
+2026-04-07 02:50:42,351 [trainer.py] => ================================================================================
+2026-04-07 02:50:42,351 [trainer.py] => ================================================================================
+2026-04-07 02:50:42,363 [base.py] => Task 1 learning on class 10-20
+2026-04-07 02:50:42,366 [toolkit.py] => Total params:     104,147,383
+2026-04-07 02:50:42,366 [toolkit.py] => Trainable params: 376,330
+2026-04-07 02:50:42,366 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 02:55:21,142 [dir_fis_lora.py] => Task 1, Epoch 20/20 => Loss 0.123, Train_accy 95.58
+2026-04-07 02:55:21,143 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 02:55:24,011 [trainer.py] => Evaluation time: 0h 0m 2s
+2026-04-07 02:55:26,010 [dir_fis_lora_dc.py] => Task 1 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 02:55:26,010 [dir_fis_lora_dc.py] => Task 1 adaptive alpha => overlap 0.0171, alpha_t 0.5000
+2026-04-07 02:55:43,273 [dir_fis_lora_dc.py] => Task 1 decision consolidation => head 1, scale 0.9901, bias -0.0100, pre_ce 0.7580, post_ce 0.7525, old_kd -0.018733
+2026-04-07 02:55:43,279 [trainer.py] => Accuracy: {'total': np.float64(96.6), '00-09': np.float64(95.4), '10-19': np.float64(97.8), 'old': np.float64(95.4), 'new': np.float64(97.8)}
+2026-04-07 02:55:43,279 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6)]
+2026-04-07 02:55:43,279 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25)]
+2026-04-07 02:55:43,279 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97]
+2026-04-07 02:55:43,279 [trainer.py] => ================================================================================
+2026-04-07 02:55:43,279 [trainer.py] => ================================================================================
+2026-04-07 02:55:43,292 [base.py] => Task 2 learning on class 20-30
+2026-04-07 02:55:43,296 [toolkit.py] => Total params:     104,147,383
+2026-04-07 02:55:43,296 [toolkit.py] => Trainable params: 376,330
+2026-04-07 02:55:43,296 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:00:21,589 [dir_fis_lora.py] => Task 2, Epoch 20/20 => Loss 0.117, Train_accy 96.24
+2026-04-07 03:00:21,591 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 03:00:25,754 [trainer.py] => Evaluation time: 0h 0m 4s
+2026-04-07 03:00:27,786 [dir_fis_lora_dc.py] => Task 2 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:00:27,786 [dir_fis_lora_dc.py] => Task 2 adaptive alpha => overlap 0.0289, alpha_t 0.5000
+2026-04-07 03:00:45,059 [dir_fis_lora_dc.py] => Task 2 decision consolidation => head 2, scale 0.9900, bias -0.0100, pre_ce 0.3351, post_ce 0.3333, old_kd -0.020671
+2026-04-07 03:00:45,064 [trainer.py] => Accuracy: {'total': np.float64(94.43), '00-09': np.float64(92.6), '10-19': np.float64(94.9), '20-29': np.float64(95.8), 'old': np.float64(93.75), 'new': np.float64(95.8)}
+2026-04-07 03:00:45,064 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43)]
+2026-04-07 03:00:45,064 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6)]
+2026-04-07 03:00:45,064 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334]
+2026-04-07 03:00:45,064 [trainer.py] => ================================================================================
+2026-04-07 03:00:45,064 [trainer.py] => ================================================================================
+2026-04-07 03:00:45,076 [base.py] => Task 3 learning on class 30-40
+2026-04-07 03:00:45,078 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:00:45,078 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:00:45,078 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:05:24,911 [dir_fis_lora.py] => Task 3, Epoch 20/20 => Loss 0.116, Train_accy 96.14
+2026-04-07 03:05:24,912 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 03:05:30,323 [trainer.py] => Evaluation time: 0h 0m 5s
+2026-04-07 03:05:32,435 [dir_fis_lora_dc.py] => Task 3 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:05:32,436 [dir_fis_lora_dc.py] => Task 3 adaptive alpha => overlap 0.0440, alpha_t 0.5000
+2026-04-07 03:05:49,751 [dir_fis_lora_dc.py] => Task 3 decision consolidation => head 3, scale 0.9901, bias -0.0100, pre_ce 1.0298, post_ce 1.0219, old_kd -0.023597
+2026-04-07 03:05:49,756 [trainer.py] => Accuracy: {'total': np.float64(92.68), '00-09': np.float64(93.3), '10-19': np.float64(93.4), '20-29': np.float64(91.6), '30-39': np.float64(92.4), 'old': np.float64(92.77), 'new': np.float64(92.4)}
+2026-04-07 03:05:49,756 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68)]
+2026-04-07 03:05:49,756 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58)]
+2026-04-07 03:05:49,756 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425]
+2026-04-07 03:05:49,756 [trainer.py] => ================================================================================
+2026-04-07 03:05:49,756 [trainer.py] => ================================================================================
+2026-04-07 03:05:49,765 [base.py] => Task 4 learning on class 40-50
+2026-04-07 03:05:49,768 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:05:49,768 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:05:49,768 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:10:29,247 [dir_fis_lora.py] => Task 4, Epoch 20/20 => Loss 0.115, Train_accy 95.96
+2026-04-07 03:10:29,248 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 03:10:35,873 [trainer.py] => Evaluation time: 0h 0m 6s
+2026-04-07 03:10:37,956 [dir_fis_lora_dc.py] => Task 4 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:10:37,956 [dir_fis_lora_dc.py] => Task 4 adaptive alpha => overlap 0.0463, alpha_t 0.5000
+2026-04-07 03:10:55,230 [dir_fis_lora_dc.py] => Task 4 decision consolidation => head 4, scale 0.9900, bias -0.0100, pre_ce 0.9935, post_ce 0.9856, old_kd -0.029314
+2026-04-07 03:10:55,235 [trainer.py] => Accuracy: {'total': np.float64(90.5), '00-09': np.float64(90.8), '10-19': np.float64(92.6), '20-29': np.float64(89.9), '30-39': np.float64(86.9), '40-49': np.float64(92.3), 'old': np.float64(90.05), 'new': np.float64(92.3)}
+2026-04-07 03:10:55,235 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5)]
+2026-04-07 03:10:55,235 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16)]
+2026-04-07 03:10:55,235 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913]
+2026-04-07 03:10:55,235 [trainer.py] => ================================================================================
+2026-04-07 03:10:55,235 [trainer.py] => ================================================================================
+2026-04-07 03:10:55,244 [base.py] => Task 5 learning on class 50-60
+2026-04-07 03:10:55,247 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:10:55,247 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:10:55,247 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:15:33,937 [dir_fis_lora.py] => Task 5, Epoch 20/20 => Loss 0.129, Train_accy 95.30
+2026-04-07 03:15:33,938 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 03:15:41,796 [trainer.py] => Evaluation time: 0h 0m 7s
+2026-04-07 03:15:43,827 [dir_fis_lora_dc.py] => Task 5 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:15:43,827 [dir_fis_lora_dc.py] => Task 5 adaptive alpha => overlap 0.0712, alpha_t 0.5000
+2026-04-07 03:16:01,068 [dir_fis_lora_dc.py] => Task 5 decision consolidation => head 5, scale 0.9900, bias -0.0100, pre_ce 0.5736, post_ce 0.5714, old_kd -0.024839
+2026-04-07 03:16:01,073 [trainer.py] => Accuracy: {'total': np.float64(89.13), '00-09': np.float64(91.1), '10-19': np.float64(93.3), '20-29': np.float64(90.9), '30-39': np.float64(87.4), '40-49': np.float64(83.2), '50-59': np.float64(88.9), 'old': np.float64(89.18), 'new': np.float64(88.9)}
+2026-04-07 03:16:01,073 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5), np.float64(89.13)]
+2026-04-07 03:16:01,073 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3)]
+2026-04-07 03:16:01,073 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913, 0.8975]
+2026-04-07 03:16:01,073 [trainer.py] => ================================================================================
+2026-04-07 03:16:01,073 [trainer.py] => ================================================================================
+2026-04-07 03:16:01,084 [base.py] => Task 6 learning on class 60-70
+2026-04-07 03:16:01,087 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:16:01,087 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:16:01,087 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:20:38,567 [dir_fis_lora.py] => Task 6, Epoch 20/20 => Loss 0.124, Train_accy 95.90
+2026-04-07 03:20:38,568 [trainer.py] => Training time: 0h 4m 37s
+2026-04-07 03:20:47,578 [trainer.py] => Evaluation time: 0h 0m 9s
+2026-04-07 03:20:49,635 [dir_fis_lora_dc.py] => Task 6 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:20:49,635 [dir_fis_lora_dc.py] => Task 6 adaptive alpha => overlap 0.0744, alpha_t 0.5000
+2026-04-07 03:21:06,789 [dir_fis_lora_dc.py] => Task 6 decision consolidation => head 6, scale 0.9900, bias -0.0099, pre_ce 0.4807, post_ce 0.4791, old_kd -0.025560
+2026-04-07 03:21:06,795 [trainer.py] => Accuracy: {'total': np.float64(87.8), '00-09': np.float64(90.2), '10-19': np.float64(92.2), '20-29': np.float64(86.9), '30-39': np.float64(86.4), '40-49': np.float64(83.8), '50-59': np.float64(81.0), '60-69': np.float64(94.1), 'old': np.float64(86.75), 'new': np.float64(94.1)}
+2026-04-07 03:21:06,795 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5), np.float64(89.13), np.float64(87.8)]
+2026-04-07 03:21:06,795 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07)]
+2026-04-07 03:21:06,795 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913, 0.8975, 0.8852857142857142]
+2026-04-07 03:21:06,795 [trainer.py] => ================================================================================
+2026-04-07 03:21:06,795 [trainer.py] => ================================================================================
+2026-04-07 03:21:06,803 [base.py] => Task 7 learning on class 70-80
+2026-04-07 03:21:06,806 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:21:06,806 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:21:06,806 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:25:44,382 [dir_fis_lora.py] => Task 7, Epoch 20/20 => Loss 0.120, Train_accy 96.14
+2026-04-07 03:25:44,383 [trainer.py] => Training time: 0h 4m 37s
+2026-04-07 03:25:54,471 [trainer.py] => Evaluation time: 0h 0m 10s
+2026-04-07 03:25:56,489 [dir_fis_lora_dc.py] => Task 7 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:25:56,489 [dir_fis_lora_dc.py] => Task 7 adaptive alpha => overlap 0.0896, alpha_t 0.5000
+2026-04-07 03:26:13,904 [dir_fis_lora_dc.py] => Task 7 decision consolidation => head 7, scale 0.9900, bias -0.0100, pre_ce 0.8421, post_ce 0.8381, old_kd -0.022503
+2026-04-07 03:26:13,911 [trainer.py] => Accuracy: {'total': np.float64(87.5), '00-09': np.float64(91.6), '10-19': np.float64(91.9), '20-29': np.float64(85.9), '30-39': np.float64(85.8), '40-49': np.float64(82.3), '50-59': np.float64(79.3), '60-69': np.float64(88.3), '70-79': np.float64(94.9), 'old': np.float64(86.44), 'new': np.float64(94.9)}
+2026-04-07 03:26:13,911 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5), np.float64(89.13), np.float64(87.8), np.float64(87.5)]
+2026-04-07 03:26:13,911 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01)]
+2026-04-07 03:26:13,911 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913, 0.8975, 0.8852857142857142, 0.88075]
+2026-04-07 03:26:13,911 [trainer.py] => ================================================================================
+2026-04-07 03:26:13,911 [trainer.py] => ================================================================================
+2026-04-07 03:26:13,924 [base.py] => Task 8 learning on class 80-90
+2026-04-07 03:26:13,927 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:26:13,927 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:26:13,927 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:30:52,507 [dir_fis_lora.py] => Task 8, Epoch 20/20 => Loss 0.101, Train_accy 96.50
+2026-04-07 03:30:52,508 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 03:31:04,045 [trainer.py] => Evaluation time: 0h 0m 11s
+2026-04-07 03:31:06,113 [dir_fis_lora_dc.py] => Task 8 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:31:06,113 [dir_fis_lora_dc.py] => Task 8 adaptive alpha => overlap 0.0698, alpha_t 0.5000
+2026-04-07 03:31:23,431 [dir_fis_lora_dc.py] => Task 8 decision consolidation => head 8, scale 0.9900, bias -0.0100, pre_ce 0.5616, post_ce 0.5580, old_kd -0.026974
+2026-04-07 03:31:23,436 [trainer.py] => Accuracy: {'total': np.float64(87.02), '00-09': np.float64(88.8), '10-19': np.float64(90.6), '20-29': np.float64(84.6), '30-39': np.float64(86.8), '40-49': np.float64(81.9), '50-59': np.float64(79.8), '60-69': np.float64(86.3), '70-79': np.float64(88.5), '80-89': np.float64(95.9), 'old': np.float64(85.91), 'new': np.float64(95.9)}
+2026-04-07 03:31:23,436 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5), np.float64(89.13), np.float64(87.8), np.float64(87.5), np.float64(87.02)]
+2026-04-07 03:31:23,436 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01), np.float64(98.1)]
+2026-04-07 03:31:23,436 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913, 0.8975, 0.8852857142857142, 0.88075, 0.8755555555555555]
+2026-04-07 03:31:23,436 [trainer.py] => ================================================================================
+2026-04-07 03:31:23,436 [trainer.py] => ================================================================================
+2026-04-07 03:31:23,443 [base.py] => Task 9 learning on class 90-100
+2026-04-07 03:31:23,446 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:31:23,446 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:31:23,446 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 03:36:01,485 [dir_fis_lora.py] => Task 9, Epoch 20/20 => Loss 0.085, Train_accy 97.14
+2026-04-07 03:36:01,487 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 03:36:13,904 [trainer.py] => Evaluation time: 0h 0m 12s
+2026-04-07 03:36:15,968 [dir_fis_lora_dc.py] => Task 9 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 03:36:15,968 [dir_fis_lora_dc.py] => Task 9 adaptive alpha => overlap 0.0744, alpha_t 0.5000
+2026-04-07 03:36:33,323 [dir_fis_lora_dc.py] => Task 9 decision consolidation => head 9, scale 0.9901, bias -0.0100, pre_ce 0.9871, post_ce 0.9811, old_kd -0.023850
+2026-04-07 03:36:33,327 [trainer.py] => Accuracy: {'total': np.float64(85.7), '00-09': np.float64(90.0), '10-19': np.float64(88.6), '20-29': np.float64(85.1), '30-39': np.float64(84.7), '40-49': np.float64(78.7), '50-59': np.float64(75.6), '60-69': np.float64(87.0), '70-79': np.float64(88.2), '80-89': np.float64(91.6), '90-99': np.float64(87.5), 'old': np.float64(85.5), 'new': np.float64(87.5)}
+2026-04-07 03:36:33,327 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.43), np.float64(92.68), np.float64(90.5), np.float64(89.13), np.float64(87.8), np.float64(87.5), np.float64(87.02), np.float64(85.7)]
+2026-04-07 03:36:33,327 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01), np.float64(98.1), np.float64(98.28)]
+2026-04-07 03:36:33,327 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.9523333333333334, 0.93425, 0.913, 0.8975, 0.8852857142857142, 0.88075, 0.8755555555555555, 0.8618]
+2026-04-07 03:36:33,327 [trainer.py] => ================================================================================
+2026-04-07 03:59:41,617 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-07 03:59:41,617 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-07 03:59:41,617 [toolkit.py] => debug: False
+2026-04-07 03:59:41,617 [toolkit.py] => save_ckp: False
+2026-04-07 03:59:41,617 [toolkit.py] => seed: 0
+2026-04-07 03:59:41,617 [toolkit.py] => dataset: cifar100
+2026-04-07 03:59:41,618 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-07 03:59:41,618 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-07 03:59:41,618 [toolkit.py] => init_cls: 10
+2026-04-07 03:59:41,618 [toolkit.py] => increment: 10
+2026-04-07 03:59:41,618 [toolkit.py] => sessions: 10
+2026-04-07 03:59:41,618 [toolkit.py] => shuffle: False
+2026-04-07 03:59:41,618 [toolkit.py] => method: dfsc_ia_dc
+2026-04-07 03:59:41,618 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-07 03:59:41,618 [toolkit.py] => optimizer: adam
+2026-04-07 03:59:41,618 [toolkit.py] => scheduler: cosine
+2026-04-07 03:59:41,618 [toolkit.py] => epochs: 20
+2026-04-07 03:59:41,618 [toolkit.py] => lrate: 0.0005
+2026-04-07 03:59:41,618 [toolkit.py] => fc_lrate: 0.005
+2026-04-07 03:59:41,618 [toolkit.py] => weight_decay: 0.0
+2026-04-07 03:59:41,618 [toolkit.py] => batch_size: 128
+2026-04-07 03:59:41,618 [toolkit.py] => rank: 10
+2026-04-07 03:59:41,618 [toolkit.py] => rank_budget: 10
+2026-04-07 03:59:41,618 [toolkit.py] => max_rank: 20
+2026-04-07 03:59:41,618 [toolkit.py] => grow_rank: 2
+2026-04-07 03:59:41,618 [toolkit.py] => task_rank: 10
+2026-04-07 03:59:41,618 [toolkit.py] => warmup_batches: 1
+2026-04-07 03:59:41,618 [toolkit.py] => basis_growth_batches: 10
+2026-04-07 03:59:41,618 [toolkit.py] => num_workers: 4
+2026-04-07 03:59:41,618 [toolkit.py] => gamma: 1.0
+2026-04-07 03:59:41,618 [toolkit.py] => importance_decay: 0.9
+2026-04-07 03:59:41,618 [toolkit.py] => lambda: 1000.0
+2026-04-07 03:59:41,618 [toolkit.py] => novelty_threshold: 0.0
+2026-04-07 03:59:41,618 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-07 03:59:41,618 [toolkit.py] => reg_alpha: 1.0
+2026-04-07 03:59:41,618 [toolkit.py] => reg_w_tau: 0.5
+2026-04-07 03:59:41,618 [toolkit.py] => reg_w_max: 5.0
+2026-04-07 03:59:41,618 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-07 03:59:41,618 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_adaptive: True
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_probe_batches: 2
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-07 03:59:41,618 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-07 03:59:41,618 [toolkit.py] => importance_aware_consolidation: True
+2026-04-07 03:59:41,618 [toolkit.py] => protected_slots: 2
+2026-04-07 03:59:41,618 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-07 03:59:41,618 [toolkit.py] => importance_transport: True
+2026-04-07 03:59:41,618 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_lr: 0.001
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_kd_weight: 1.5
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_reg: 0.05
+2026-04-07 03:59:41,619 [toolkit.py] => decision_scale_min: 0.9
+2026-04-07 03:59:41,619 [toolkit.py] => decision_scale_max: 1.1
+2026-04-07 03:59:41,619 [toolkit.py] => decision_bias_min: -0.003
+2026-04-07 03:59:41,619 [toolkit.py] => decision_bias_max: 0.003
+2026-04-07 03:59:41,619 [toolkit.py] => decision_consolidation_max_batches: 10
+2026-04-07 03:59:41,619 [toolkit.py] => decision_guardrail_enabled: True
+2026-04-07 03:59:41,619 [toolkit.py] => decision_guard_max_scale_delta: 0.08
+2026-04-07 03:59:41,619 [toolkit.py] => decision_guard_max_bias_abs: 0.25
+2026-04-07 03:59:41,619 [toolkit.py] => decision_guard_ce_tolerance: 0.02
+2026-04-07 03:59:41,619 [toolkit.py] => decision_guard_eval_batches: 10
+2026-04-07 03:59:41,619 [toolkit.py] => conflict_gate_enabled: False
+2026-04-07 03:59:41,619 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-07 03:59:41,619 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-07 03:59:41,619 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-07 03:59:41,619 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-07 03:59:43,077 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-07 03:59:44,579 [trainer.py] => Running 10/10 tasks
+2026-04-07 03:59:44,579 [trainer.py] => ================================================================================
+2026-04-07 03:59:44,586 [base.py] => Task 0 learning on class 0-10
+2026-04-07 03:59:45,135 [toolkit.py] => Total params:     104,147,383
+2026-04-07 03:59:45,135 [toolkit.py] => Trainable params: 376,330
+2026-04-07 03:59:45,135 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:04:14,698 [dir_fis_lora.py] => Task 0, Epoch 20/20 => Loss 0.096, Train_accy 96.68
+2026-04-07 04:04:14,699 [trainer.py] => Training time: 0h 4m 30s
+2026-04-07 04:04:16,330 [trainer.py] => Evaluation time: 0h 0m 1s
+2026-04-07 04:04:18,147 [dir_fis_lora_dc.py] => Task 0 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:04:31,239 [trainer.py] => Accuracy: {'total': np.float64(99.5), '00-09': np.float64(99.5), 'old': 0, 'new': np.float64(99.5)}
+2026-04-07 04:04:31,239 [trainer.py] => (curve) top1 Acc: [np.float64(99.5)]
+2026-04-07 04:04:31,239 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5)]
+2026-04-07 04:04:31,239 [trainer.py] => (curve) top1 Acc task: [1.0]
+2026-04-07 04:04:31,239 [trainer.py] => ================================================================================
+2026-04-07 04:04:31,239 [trainer.py] => ================================================================================
+2026-04-07 04:04:31,252 [base.py] => Task 1 learning on class 10-20
+2026-04-07 04:04:31,254 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:04:31,254 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:04:31,254 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:09:10,006 [dir_fis_lora.py] => Task 1, Epoch 20/20 => Loss 0.123, Train_accy 95.58
+2026-04-07 04:09:10,007 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 04:09:12,959 [trainer.py] => Evaluation time: 0h 0m 2s
+2026-04-07 04:09:14,977 [dir_fis_lora_dc.py] => Task 1 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:09:14,978 [dir_fis_lora_dc.py] => Task 1 adaptive alpha => overlap 0.0171, alpha_t 0.5000
+2026-04-07 04:09:32,417 [dir_fis_lora_dc.py] => Task 1 decision consolidation => head 1, scale 0.9908, bias 0.0030, pre_ce 0.7580, post_ce 0.7529, old_kd 0.000444
+2026-04-07 04:09:32,423 [trainer.py] => Accuracy: {'total': np.float64(96.6), '00-09': np.float64(95.4), '10-19': np.float64(97.8), 'old': np.float64(95.4), 'new': np.float64(97.8)}
+2026-04-07 04:09:32,423 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6)]
+2026-04-07 04:09:32,423 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25)]
+2026-04-07 04:09:32,423 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97]
+2026-04-07 04:09:32,423 [trainer.py] => ================================================================================
+2026-04-07 04:09:32,423 [trainer.py] => ================================================================================
+2026-04-07 04:09:32,434 [base.py] => Task 2 learning on class 20-30
+2026-04-07 04:09:32,437 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:09:32,437 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:09:32,437 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:14:11,616 [dir_fis_lora.py] => Task 2, Epoch 20/20 => Loss 0.117, Train_accy 96.24
+2026-04-07 04:14:11,617 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 04:14:15,884 [trainer.py] => Evaluation time: 0h 0m 4s
+2026-04-07 04:14:17,920 [dir_fis_lora_dc.py] => Task 2 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:14:17,920 [dir_fis_lora_dc.py] => Task 2 adaptive alpha => overlap 0.0289, alpha_t 0.5000
+2026-04-07 04:14:35,210 [dir_fis_lora_dc.py] => Task 2 decision consolidation => head 2, scale 0.9924, bias 0.0030, pre_ce 0.3351, post_ce 0.3338, old_kd 0.000319
+2026-04-07 04:14:35,215 [trainer.py] => Accuracy: {'total': np.float64(94.4), '00-09': np.float64(92.5), '10-19': np.float64(94.9), '20-29': np.float64(95.8), 'old': np.float64(93.7), 'new': np.float64(95.8)}
+2026-04-07 04:14:35,215 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4)]
+2026-04-07 04:14:35,215 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6)]
+2026-04-07 04:14:35,215 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952]
+2026-04-07 04:14:35,215 [trainer.py] => ================================================================================
+2026-04-07 04:14:35,215 [trainer.py] => ================================================================================
+2026-04-07 04:14:35,225 [base.py] => Task 3 learning on class 30-40
+2026-04-07 04:14:35,228 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:14:35,228 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:14:35,228 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:19:14,242 [dir_fis_lora.py] => Task 3, Epoch 20/20 => Loss 0.116, Train_accy 96.14
+2026-04-07 04:19:14,243 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 04:19:19,646 [trainer.py] => Evaluation time: 0h 0m 5s
+2026-04-07 04:19:21,760 [dir_fis_lora_dc.py] => Task 3 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:19:21,760 [dir_fis_lora_dc.py] => Task 3 adaptive alpha => overlap 0.0440, alpha_t 0.5000
+2026-04-07 04:19:38,974 [dir_fis_lora_dc.py] => Task 3 decision consolidation => head 3, scale 0.9902, bias 0.0030, pre_ce 1.0298, post_ce 1.0220, old_kd 0.000613
+2026-04-07 04:19:38,979 [trainer.py] => Accuracy: {'total': np.float64(92.65), '00-09': np.float64(93.3), '10-19': np.float64(93.4), '20-29': np.float64(91.6), '30-39': np.float64(92.3), 'old': np.float64(92.77), 'new': np.float64(92.3)}
+2026-04-07 04:19:38,979 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65)]
+2026-04-07 04:19:38,979 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58)]
+2026-04-07 04:19:38,979 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934]
+2026-04-07 04:19:38,979 [trainer.py] => ================================================================================
+2026-04-07 04:19:38,979 [trainer.py] => ================================================================================
+2026-04-07 04:19:38,987 [base.py] => Task 4 learning on class 40-50
+2026-04-07 04:19:38,989 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:19:38,989 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:19:38,990 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:24:18,331 [dir_fis_lora.py] => Task 4, Epoch 20/20 => Loss 0.115, Train_accy 95.96
+2026-04-07 04:24:18,332 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 04:24:25,083 [trainer.py] => Evaluation time: 0h 0m 6s
+2026-04-07 04:24:27,174 [dir_fis_lora_dc.py] => Task 4 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:24:27,175 [dir_fis_lora_dc.py] => Task 4 adaptive alpha => overlap 0.0463, alpha_t 0.5000
+2026-04-07 04:24:44,546 [dir_fis_lora_dc.py] => Task 4 decision consolidation => head 4, scale 0.9902, bias 0.0030, pre_ce 0.9935, post_ce 0.9858, old_kd 0.000833
+2026-04-07 04:24:44,551 [trainer.py] => Accuracy: {'total': np.float64(90.48), '00-09': np.float64(90.7), '10-19': np.float64(92.6), '20-29': np.float64(89.9), '30-39': np.float64(86.9), '40-49': np.float64(92.3), 'old': np.float64(90.02), 'new': np.float64(92.3)}
+2026-04-07 04:24:44,551 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48)]
+2026-04-07 04:24:44,551 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16)]
+2026-04-07 04:24:44,551 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128]
+2026-04-07 04:24:44,551 [trainer.py] => ================================================================================
+2026-04-07 04:24:44,551 [trainer.py] => ================================================================================
+2026-04-07 04:24:44,560 [base.py] => Task 5 learning on class 50-60
+2026-04-07 04:24:44,563 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:24:44,563 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:24:44,563 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:29:23,536 [dir_fis_lora.py] => Task 5, Epoch 20/20 => Loss 0.129, Train_accy 95.30
+2026-04-07 04:29:23,538 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 04:29:31,521 [trainer.py] => Evaluation time: 0h 0m 7s
+2026-04-07 04:29:33,557 [dir_fis_lora_dc.py] => Task 5 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:29:33,557 [dir_fis_lora_dc.py] => Task 5 adaptive alpha => overlap 0.0712, alpha_t 0.5000
+2026-04-07 04:29:50,902 [dir_fis_lora_dc.py] => Task 5 decision consolidation => head 5, scale 0.9908, bias 0.0030, pre_ce 0.5736, post_ce 0.5716, old_kd 0.000527
+2026-04-07 04:29:50,907 [trainer.py] => Accuracy: {'total': np.float64(89.17), '00-09': np.float64(91.1), '10-19': np.float64(93.4), '20-29': np.float64(91.1), '30-39': np.float64(87.4), '40-49': np.float64(83.2), '50-59': np.float64(88.8), 'old': np.float64(89.24), 'new': np.float64(88.8)}
+2026-04-07 04:29:50,907 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48), np.float64(89.17)]
+2026-04-07 04:29:50,907 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3)]
+2026-04-07 04:29:50,908 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128, 0.898]
+2026-04-07 04:29:50,908 [trainer.py] => ================================================================================
+2026-04-07 04:29:50,908 [trainer.py] => ================================================================================
+2026-04-07 04:29:50,918 [base.py] => Task 6 learning on class 60-70
+2026-04-07 04:29:50,921 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:29:50,921 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:29:50,921 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:34:29,951 [dir_fis_lora.py] => Task 6, Epoch 20/20 => Loss 0.124, Train_accy 95.90
+2026-04-07 04:34:29,952 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 04:34:39,079 [trainer.py] => Evaluation time: 0h 0m 9s
+2026-04-07 04:34:41,141 [dir_fis_lora_dc.py] => Task 6 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:34:41,141 [dir_fis_lora_dc.py] => Task 6 adaptive alpha => overlap 0.0744, alpha_t 0.5000
+2026-04-07 04:34:58,352 [dir_fis_lora_dc.py] => Task 6 decision consolidation => head 6, scale 0.9923, bias 0.0030, pre_ce 0.4807, post_ce 0.4795, old_kd 0.000365
+2026-04-07 04:34:58,357 [trainer.py] => Accuracy: {'total': np.float64(87.76), '00-09': np.float64(89.9), '10-19': np.float64(92.2), '20-29': np.float64(87.0), '30-39': np.float64(86.4), '40-49': np.float64(83.8), '50-59': np.float64(81.0), '60-69': np.float64(94.0), 'old': np.float64(86.72), 'new': np.float64(94.0)}
+2026-04-07 04:34:58,357 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48), np.float64(89.17), np.float64(87.76)]
+2026-04-07 04:34:58,357 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07)]
+2026-04-07 04:34:58,357 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128, 0.898, 0.8848571428571429]
+2026-04-07 04:34:58,357 [trainer.py] => ================================================================================
+2026-04-07 04:34:58,357 [trainer.py] => ================================================================================
+2026-04-07 04:34:58,364 [base.py] => Task 7 learning on class 70-80
+2026-04-07 04:34:58,366 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:34:58,366 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:34:58,366 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:39:36,822 [dir_fis_lora.py] => Task 7, Epoch 20/20 => Loss 0.120, Train_accy 96.14
+2026-04-07 04:39:36,823 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 04:39:47,195 [trainer.py] => Evaluation time: 0h 0m 10s
+2026-04-07 04:39:49,216 [dir_fis_lora_dc.py] => Task 7 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:39:49,216 [dir_fis_lora_dc.py] => Task 7 adaptive alpha => overlap 0.0896, alpha_t 0.5000
+2026-04-07 04:40:06,473 [dir_fis_lora_dc.py] => Task 7 decision consolidation => head 7, scale 0.9905, bias 0.0030, pre_ce 0.8421, post_ce 0.8383, old_kd 0.000462
+2026-04-07 04:40:06,480 [trainer.py] => Accuracy: {'total': np.float64(87.45), '00-09': np.float64(91.6), '10-19': np.float64(91.8), '20-29': np.float64(85.9), '30-39': np.float64(85.7), '40-49': np.float64(82.2), '50-59': np.float64(79.2), '60-69': np.float64(88.3), '70-79': np.float64(94.9), 'old': np.float64(86.39), 'new': np.float64(94.9)}
+2026-04-07 04:40:06,480 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48), np.float64(89.17), np.float64(87.76), np.float64(87.45)]
+2026-04-07 04:40:06,480 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01)]
+2026-04-07 04:40:06,480 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128, 0.898, 0.8848571428571429, 0.88025]
+2026-04-07 04:40:06,480 [trainer.py] => ================================================================================
+2026-04-07 04:40:06,480 [trainer.py] => ================================================================================
+2026-04-07 04:40:06,492 [base.py] => Task 8 learning on class 80-90
+2026-04-07 04:40:06,496 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:40:06,496 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:40:06,496 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:44:45,617 [dir_fis_lora.py] => Task 8, Epoch 20/20 => Loss 0.101, Train_accy 96.50
+2026-04-07 04:44:45,618 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 04:44:57,181 [trainer.py] => Evaluation time: 0h 0m 11s
+2026-04-07 04:44:59,250 [dir_fis_lora_dc.py] => Task 8 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:44:59,250 [dir_fis_lora_dc.py] => Task 8 adaptive alpha => overlap 0.0698, alpha_t 0.5000
+2026-04-07 04:45:16,698 [dir_fis_lora_dc.py] => Task 8 decision consolidation => head 8, scale 0.9907, bias 0.0030, pre_ce 0.5616, post_ce 0.5582, old_kd 0.000696
+2026-04-07 04:45:16,703 [trainer.py] => Accuracy: {'total': np.float64(87.03), '00-09': np.float64(88.7), '10-19': np.float64(90.6), '20-29': np.float64(84.8), '30-39': np.float64(86.8), '40-49': np.float64(81.9), '50-59': np.float64(79.8), '60-69': np.float64(86.5), '70-79': np.float64(88.5), '80-89': np.float64(95.7), 'old': np.float64(85.95), 'new': np.float64(95.7)}
+2026-04-07 04:45:16,703 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48), np.float64(89.17), np.float64(87.76), np.float64(87.45), np.float64(87.03)]
+2026-04-07 04:45:16,703 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01), np.float64(98.1)]
+2026-04-07 04:45:16,703 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128, 0.898, 0.8848571428571429, 0.88025, 0.8755555555555555]
+2026-04-07 04:45:16,703 [trainer.py] => ================================================================================
+2026-04-07 04:45:16,703 [trainer.py] => ================================================================================
+2026-04-07 04:45:16,711 [base.py] => Task 9 learning on class 90-100
+2026-04-07 04:45:16,713 [toolkit.py] => Total params:     104,147,383
+2026-04-07 04:45:16,713 [toolkit.py] => Trainable params: 376,330
+2026-04-07 04:45:16,713 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 04:49:55,441 [dir_fis_lora.py] => Task 9, Epoch 20/20 => Loss 0.085, Train_accy 97.14
+2026-04-07 04:49:55,442 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 04:50:08,231 [trainer.py] => Evaluation time: 0h 0m 12s
+2026-04-07 04:50:10,295 [dir_fis_lora_dc.py] => Task 9 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 04:50:10,295 [dir_fis_lora_dc.py] => Task 9 adaptive alpha => overlap 0.0744, alpha_t 0.5000
+2026-04-07 04:50:27,566 [dir_fis_lora_dc.py] => Task 9 decision consolidation => head 9, scale 0.9905, bias 0.0030, pre_ce 0.9871, post_ce 0.9813, old_kd 0.000556
+2026-04-07 04:50:27,571 [trainer.py] => Accuracy: {'total': np.float64(85.71), '00-09': np.float64(89.9), '10-19': np.float64(88.7), '20-29': np.float64(85.2), '30-39': np.float64(84.8), '40-49': np.float64(78.7), '50-59': np.float64(75.7), '60-69': np.float64(87.0), '70-79': np.float64(88.2), '80-89': np.float64(91.6), '90-99': np.float64(87.3), 'old': np.float64(85.53), 'new': np.float64(87.3)}
+2026-04-07 04:50:27,571 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(96.6), np.float64(94.4), np.float64(92.65), np.float64(90.48), np.float64(89.17), np.float64(87.76), np.float64(87.45), np.float64(87.03), np.float64(85.71)]
+2026-04-07 04:50:27,571 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.25), np.float64(98.6), np.float64(98.58), np.float64(98.16), np.float64(98.3), np.float64(98.07), np.float64(98.01), np.float64(98.1), np.float64(98.28)]
+2026-04-07 04:50:27,571 [trainer.py] => (curve) top1 Acc task: [1.0, 0.97, 0.952, 0.934, 0.9128, 0.898, 0.8848571428571429, 0.88025, 0.8755555555555555, 0.8619]
+2026-04-07 04:50:27,571 [trainer.py] => ================================================================================
+2026-04-07 08:53:46,561 [toolkit.py] => config: configs/dir_fis_lora/cifar100_dfsc_ia_dc.json
+2026-04-07 08:53:46,561 [toolkit.py] => device: [device(type='cuda', index=0)]
+2026-04-07 08:53:46,561 [toolkit.py] => debug: False
+2026-04-07 08:53:46,561 [toolkit.py] => save_ckp: False
+2026-04-07 08:53:46,561 [toolkit.py] => seed: 0
+2026-04-07 08:53:46,561 [toolkit.py] => dataset: cifar100
+2026-04-07 08:53:46,561 [toolkit.py] => data_path: /mnt/data/binhnt6/cifar100
+2026-04-07 08:53:46,561 [toolkit.py] => load: vit_base_patch16_224_in21k
+2026-04-07 08:53:46,561 [toolkit.py] => init_cls: 10
+2026-04-07 08:53:46,561 [toolkit.py] => increment: 10
+2026-04-07 08:53:46,561 [toolkit.py] => sessions: 10
+2026-04-07 08:53:46,561 [toolkit.py] => shuffle: False
+2026-04-07 08:53:46,561 [toolkit.py] => method: dfsc_ia_dc
+2026-04-07 08:53:46,561 [toolkit.py] => basis_update_mode: realized_drift
+2026-04-07 08:53:46,561 [toolkit.py] => optimizer: adam
+2026-04-07 08:53:46,561 [toolkit.py] => scheduler: cosine
+2026-04-07 08:53:46,561 [toolkit.py] => epochs: 20
+2026-04-07 08:53:46,561 [toolkit.py] => lrate: 0.0005
+2026-04-07 08:53:46,561 [toolkit.py] => fc_lrate: 0.005
+2026-04-07 08:53:46,561 [toolkit.py] => weight_decay: 0.0
+2026-04-07 08:53:46,561 [toolkit.py] => batch_size: 128
+2026-04-07 08:53:46,561 [toolkit.py] => rank: 10
+2026-04-07 08:53:46,561 [toolkit.py] => rank_budget: 10
+2026-04-07 08:53:46,561 [toolkit.py] => max_rank: 20
+2026-04-07 08:53:46,561 [toolkit.py] => grow_rank: 2
+2026-04-07 08:53:46,561 [toolkit.py] => task_rank: 10
+2026-04-07 08:53:46,561 [toolkit.py] => warmup_batches: 1
+2026-04-07 08:53:46,561 [toolkit.py] => basis_growth_batches: 10
+2026-04-07 08:53:46,561 [toolkit.py] => num_workers: 4
+2026-04-07 08:53:46,561 [toolkit.py] => gamma: 1.0
+2026-04-07 08:53:46,561 [toolkit.py] => importance_decay: 0.9
+2026-04-07 08:53:46,561 [toolkit.py] => lambda: 1000.0
+2026-04-07 08:53:46,561 [toolkit.py] => novelty_threshold: 0.0
+2026-04-07 08:53:46,561 [toolkit.py] => reg_lambda_min: 0.2
+2026-04-07 08:53:46,561 [toolkit.py] => reg_alpha: 1.0
+2026-04-07 08:53:46,561 [toolkit.py] => reg_w_tau: 0.5
+2026-04-07 08:53:46,561 [toolkit.py] => reg_w_max: 5.0
+2026-04-07 08:53:46,562 [toolkit.py] => reg_new_dir_weight: 0.0
+2026-04-07 08:53:46,562 [toolkit.py] => importance_floor_frac: 0.3
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_adaptive: True
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_probe_batches: 2
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_probe_use_buffer: False
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_probe_ema: 0.0
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_overlap_tau: 0.5
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_scale_min: 0.5
+2026-04-07 08:53:46,562 [toolkit.py] => alpha_scale_max: 2.0
+2026-04-07 08:53:46,562 [toolkit.py] => importance_aware_consolidation: True
+2026-04-07 08:53:46,562 [toolkit.py] => protected_slots: 2
+2026-04-07 08:53:46,562 [toolkit.py] => protected_slots_ratio: 0.0
+2026-04-07 08:53:46,562 [toolkit.py] => importance_transport: True
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_enabled: True
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_epochs: 1
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_lr: 0.001
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_weight_decay: 0.0
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_kd_weight: 1.5
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_tau: 2.0
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_reg: 0.05
+2026-04-07 08:53:46,562 [toolkit.py] => decision_head_lr: 0.001
+2026-04-07 08:53:46,562 [toolkit.py] => decision_head_retention_weight: 1.0
+2026-04-07 08:53:46,562 [toolkit.py] => decision_score_weight: 1.0
+2026-04-07 08:53:46,562 [toolkit.py] => decision_group_weight: 1.0
+2026-04-07 08:53:46,562 [toolkit.py] => decision_group_margin: 0.05
+2026-04-07 08:53:46,562 [toolkit.py] => decision_optimize_head_bias: False
+2026-04-07 08:53:46,562 [toolkit.py] => decision_scale_min: 0.9
+2026-04-07 08:53:46,562 [toolkit.py] => decision_scale_max: 1.1
+2026-04-07 08:53:46,562 [toolkit.py] => decision_bias_min: -0.003
+2026-04-07 08:53:46,562 [toolkit.py] => decision_bias_max: 0.003
+2026-04-07 08:53:46,562 [toolkit.py] => decision_consolidation_max_batches: 10
+2026-04-07 08:53:46,562 [toolkit.py] => decision_guardrail_enabled: True
+2026-04-07 08:53:46,562 [toolkit.py] => decision_guard_max_scale_delta: 0.08
+2026-04-07 08:53:46,562 [toolkit.py] => decision_guard_max_bias_abs: 0.25
+2026-04-07 08:53:46,562 [toolkit.py] => decision_guard_ce_tolerance: 0.02
+2026-04-07 08:53:46,562 [toolkit.py] => decision_guard_eval_batches: 10
+2026-04-07 08:53:46,562 [toolkit.py] => conflict_gate_enabled: False
+2026-04-07 08:53:46,562 [toolkit.py] => conflict_gate_strength: 0.5
+2026-04-07 08:53:46,562 [toolkit.py] => conflict_gate_floor: 0.1
+2026-04-07 08:53:46,562 [toolkit.py] => logdir: logs/dfsc_ia_dc/cifar100/t10
+2026-04-07 08:53:46,562 [toolkit.py] => logfilename: logs/dfsc_ia_dc/cifar100/t10/seed0
+2026-04-07 08:53:48,113 [data_manager.py] => Class index order: 0, 1, 2, 3, 4, ..., 95, 96, 97, 98, 99
+2026-04-07 08:53:49,510 [trainer.py] => Running 10/10 tasks
+2026-04-07 08:53:49,510 [trainer.py] => ================================================================================
+2026-04-07 08:53:49,517 [base.py] => Task 0 learning on class 0-10
+2026-04-07 08:53:50,110 [toolkit.py] => Total params:     104,147,383
+2026-04-07 08:53:50,110 [toolkit.py] => Trainable params: 376,330
+2026-04-07 08:53:50,110 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 08:58:19,085 [dir_fis_lora.py] => Task 0, Epoch 20/20 => Loss 0.096, Train_accy 96.68
+2026-04-07 08:58:19,086 [trainer.py] => Training time: 0h 4m 29s
+2026-04-07 08:58:20,761 [trainer.py] => Evaluation time: 0h 0m 1s
+2026-04-07 08:58:22,557 [dir_fis_lora_dc.py] => Task 0 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 08:58:35,629 [trainer.py] => Accuracy: {'total': np.float64(99.5), '00-09': np.float64(99.5), 'old': 0, 'new': np.float64(99.5)}
+2026-04-07 08:58:35,629 [trainer.py] => (curve) top1 Acc: [np.float64(99.5)]
+2026-04-07 08:58:35,629 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5)]
+2026-04-07 08:58:35,629 [trainer.py] => (curve) top1 Acc task: [1.0]
+2026-04-07 08:58:35,629 [trainer.py] => ================================================================================
+2026-04-07 08:58:35,629 [trainer.py] => ================================================================================
+2026-04-07 08:58:35,642 [base.py] => Task 1 learning on class 10-20
+2026-04-07 08:58:35,644 [toolkit.py] => Total params:     104,147,383
+2026-04-07 08:58:35,644 [toolkit.py] => Trainable params: 376,330
+2026-04-07 08:58:35,644 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:03:14,629 [dir_fis_lora.py] => Task 1, Epoch 20/20 => Loss 0.123, Train_accy 95.58
+2026-04-07 09:03:14,630 [trainer.py] => Training time: 0h 4m 39s
+2026-04-07 09:03:17,569 [trainer.py] => Evaluation time: 0h 0m 2s
+2026-04-07 09:03:19,571 [dir_fis_lora_dc.py] => Task 1 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:03:19,571 [dir_fis_lora_dc.py] => Task 1 adaptive alpha => overlap 0.0171, alpha_t 0.5000
+2026-04-07 09:03:39,071 [dir_fis_lora_dc.py] => Task 1 decision consolidation => head 1, tau_mean 1.0002, tau_min 0.9903, tau_max 1.0100, bias_mean 0.0000, pre_ce 2.1642, post_ce 2.1381, old_kd 0.000000, L_task 2.1521, L_head 0.0000, L_score 0.0000, L_group 0.0022
+2026-04-07 09:03:39,077 [trainer.py] => Accuracy: {'total': np.float64(97.35), '00-09': np.float64(97.4), '10-19': np.float64(97.3), 'old': np.float64(97.4), 'new': np.float64(97.3)}
+2026-04-07 09:03:39,077 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35)]
+2026-04-07 09:03:39,077 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2)]
+2026-04-07 09:03:39,077 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785]
+2026-04-07 09:03:39,077 [trainer.py] => ================================================================================
+2026-04-07 09:03:39,077 [trainer.py] => ================================================================================
+2026-04-07 09:03:39,089 [base.py] => Task 2 learning on class 20-30
+2026-04-07 09:03:39,092 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:03:39,092 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:03:39,092 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:08:17,756 [dir_fis_lora.py] => Task 2, Epoch 20/20 => Loss 0.110, Train_accy 96.58
+2026-04-07 09:08:17,757 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 09:08:21,983 [trainer.py] => Evaluation time: 0h 0m 4s
+2026-04-07 09:08:24,062 [dir_fis_lora_dc.py] => Task 2 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:08:24,062 [dir_fis_lora_dc.py] => Task 2 adaptive alpha => overlap 0.0272, alpha_t 0.5000
+2026-04-07 09:08:43,571 [dir_fis_lora_dc.py] => Task 2 decision consolidation => head 2, tau_mean 0.9971, tau_min 0.9808, tau_max 1.0100, bias_mean -0.0010, pre_ce 2.1454, post_ce 2.1153, old_kd 0.000005, L_task 2.1321, L_head 0.0000, L_score 0.0000, L_group 0.0015
+2026-04-07 09:08:43,576 [trainer.py] => Accuracy: {'total': np.float64(94.0), '00-09': np.float64(90.8), '10-19': np.float64(95.7), '20-29': np.float64(95.5), 'old': np.float64(93.25), 'new': np.float64(95.5)}
+2026-04-07 09:08:43,576 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0)]
+2026-04-07 09:08:43,576 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43)]
+2026-04-07 09:08:43,576 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667]
+2026-04-07 09:08:43,576 [trainer.py] => ================================================================================
+2026-04-07 09:08:43,576 [trainer.py] => ================================================================================
+2026-04-07 09:08:43,589 [base.py] => Task 3 learning on class 30-40
+2026-04-07 09:08:43,591 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:08:43,592 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:08:43,592 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:13:22,327 [dir_fis_lora.py] => Task 3, Epoch 20/20 => Loss 0.114, Train_accy 96.52
+2026-04-07 09:13:22,328 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 09:13:27,840 [trainer.py] => Evaluation time: 0h 0m 5s
+2026-04-07 09:13:29,920 [dir_fis_lora_dc.py] => Task 3 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:13:29,920 [dir_fis_lora_dc.py] => Task 3 adaptive alpha => overlap 0.0444, alpha_t 0.5000
+2026-04-07 09:13:49,593 [dir_fis_lora_dc.py] => Task 3 decision consolidation => head 3, tau_mean 0.9934, tau_min 0.9720, tau_max 1.0101, bias_mean -0.0015, pre_ce 2.1374, post_ce 2.1114, old_kd 0.000004, L_task 2.1264, L_head 0.0000, L_score 0.0000, L_group 0.0027
+2026-04-07 09:13:49,598 [trainer.py] => Accuracy: {'total': np.float64(91.85), '00-09': np.float64(88.7), '10-19': np.float64(90.5), '20-29': np.float64(95.0), '30-39': np.float64(93.2), 'old': np.float64(91.4), 'new': np.float64(93.2)}
+2026-04-07 09:13:49,598 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85)]
+2026-04-07 09:13:49,598 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28)]
+2026-04-07 09:13:49,598 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725]
+2026-04-07 09:13:49,598 [trainer.py] => ================================================================================
+2026-04-07 09:13:49,598 [trainer.py] => ================================================================================
+2026-04-07 09:13:49,611 [base.py] => Task 4 learning on class 40-50
+2026-04-07 09:13:49,614 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:13:49,614 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:13:49,614 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:18:28,493 [dir_fis_lora.py] => Task 4, Epoch 20/20 => Loss 0.129, Train_accy 96.18
+2026-04-07 09:18:28,495 [trainer.py] => Training time: 0h 4m 38s
+2026-04-07 09:18:35,212 [trainer.py] => Evaluation time: 0h 0m 6s
+2026-04-07 09:18:37,333 [dir_fis_lora_dc.py] => Task 4 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:18:37,333 [dir_fis_lora_dc.py] => Task 4 adaptive alpha => overlap 0.0556, alpha_t 0.5000
+2026-04-07 09:18:56,902 [dir_fis_lora_dc.py] => Task 4 decision consolidation => head 4, tau_mean 0.9892, tau_min 0.9625, tau_max 1.0100, bias_mean -0.0018, pre_ce 2.1351, post_ce 2.1001, old_kd 0.000004, L_task 2.1213, L_head 0.0000, L_score 0.0000, L_group 0.0029
+2026-04-07 09:18:56,907 [trainer.py] => Accuracy: {'total': np.float64(91.0), '00-09': np.float64(88.2), '10-19': np.float64(89.4), '20-29': np.float64(92.5), '30-39': np.float64(90.9), '40-49': np.float64(94.0), 'old': np.float64(90.25), 'new': np.float64(94.0)}
+2026-04-07 09:18:56,908 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0)]
+2026-04-07 09:18:56,908 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62)]
+2026-04-07 09:18:56,908 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917]
+2026-04-07 09:18:56,908 [trainer.py] => ================================================================================
+2026-04-07 09:18:56,908 [trainer.py] => ================================================================================
+2026-04-07 09:18:56,918 [base.py] => Task 5 learning on class 50-60
+2026-04-07 09:18:56,921 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:18:56,921 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:18:56,921 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:23:37,820 [dir_fis_lora.py] => Task 5, Epoch 20/20 => Loss 0.126, Train_accy 95.92
+2026-04-07 09:23:37,821 [trainer.py] => Training time: 0h 4m 40s
+2026-04-07 09:23:45,765 [trainer.py] => Evaluation time: 0h 0m 7s
+2026-04-07 09:23:47,794 [dir_fis_lora_dc.py] => Task 5 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:23:47,794 [dir_fis_lora_dc.py] => Task 5 adaptive alpha => overlap 0.0507, alpha_t 0.5000
+2026-04-07 09:24:07,404 [dir_fis_lora_dc.py] => Task 5 decision consolidation => head 5, tau_mean 0.9852, tau_min 0.9551, tau_max 1.0101, bias_mean -0.0020, pre_ce 2.1921, post_ce 2.1673, old_kd 0.000003, L_task 2.1837, L_head 0.0000, L_score 0.0000, L_group 0.0063
+2026-04-07 09:24:07,410 [trainer.py] => Accuracy: {'total': np.float64(89.3), '00-09': np.float64(90.1), '10-19': np.float64(91.0), '20-29': np.float64(90.6), '30-39': np.float64(89.1), '40-49': np.float64(91.6), '50-59': np.float64(83.4), 'old': np.float64(90.48), 'new': np.float64(83.4)}
+2026-04-07 09:24:07,410 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0), np.float64(89.3)]
+2026-04-07 09:24:07,410 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62), np.float64(98.27)]
+2026-04-07 09:24:07,410 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917, 0.8998333333333334]
+2026-04-07 09:24:07,410 [trainer.py] => ================================================================================
+2026-04-07 09:24:07,410 [trainer.py] => ================================================================================
+2026-04-07 09:24:07,417 [base.py] => Task 6 learning on class 60-70
+2026-04-07 09:24:07,420 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:24:07,420 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:24:07,420 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:28:48,186 [dir_fis_lora.py] => Task 6, Epoch 20/20 => Loss 0.130, Train_accy 95.56
+2026-04-07 09:28:48,187 [trainer.py] => Training time: 0h 4m 40s
+2026-04-07 09:28:57,334 [trainer.py] => Evaluation time: 0h 0m 9s
+2026-04-07 09:28:59,436 [dir_fis_lora_dc.py] => Task 6 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:28:59,436 [dir_fis_lora_dc.py] => Task 6 adaptive alpha => overlap 0.0692, alpha_t 0.5000
+2026-04-07 09:29:19,275 [dir_fis_lora_dc.py] => Task 6 decision consolidation => head 6, tau_mean 0.9836, tau_min 0.9641, tau_max 1.0100, bias_mean -0.0021, pre_ce 2.1636, post_ce 2.1317, old_kd 0.000003, L_task 2.1458, L_head 0.0000, L_score 0.0000, L_group 0.0050
+2026-04-07 09:29:19,280 [trainer.py] => Accuracy: {'total': np.float64(87.56), '00-09': np.float64(84.9), '10-19': np.float64(86.4), '20-29': np.float64(87.7), '30-39': np.float64(87.6), '40-49': np.float64(89.1), '50-59': np.float64(87.3), '60-69': np.float64(89.9), 'old': np.float64(87.17), 'new': np.float64(89.9)}
+2026-04-07 09:29:19,280 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0), np.float64(89.3), np.float64(87.56)]
+2026-04-07 09:29:19,281 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62), np.float64(98.27), np.float64(97.91)]
+2026-04-07 09:29:19,281 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917, 0.8998333333333334, 0.883]
+2026-04-07 09:29:19,281 [trainer.py] => ================================================================================
+2026-04-07 09:29:19,281 [trainer.py] => ================================================================================
+2026-04-07 09:29:19,291 [base.py] => Task 7 learning on class 70-80
+2026-04-07 09:29:19,294 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:29:19,294 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:29:19,294 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:33:59,947 [dir_fis_lora.py] => Task 7, Epoch 20/20 => Loss 0.117, Train_accy 96.30
+2026-04-07 09:33:59,948 [trainer.py] => Training time: 0h 4m 40s
+2026-04-07 09:34:10,410 [trainer.py] => Evaluation time: 0h 0m 10s
+2026-04-07 09:34:12,480 [dir_fis_lora_dc.py] => Task 7 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:34:12,480 [dir_fis_lora_dc.py] => Task 7 adaptive alpha => overlap 0.0631, alpha_t 0.5000
+2026-04-07 09:34:32,241 [dir_fis_lora_dc.py] => Task 7 decision consolidation => head 7, tau_mean 0.9827, tau_min 0.9629, tau_max 1.0100, bias_mean -0.0022, pre_ce 2.2091, post_ce 2.1911, old_kd 0.000002, L_task 2.1973, L_head 0.0000, L_score 0.0000, L_group 0.0076
+2026-04-07 09:34:32,247 [trainer.py] => Accuracy: {'total': np.float64(87.31), '00-09': np.float64(86.6), '10-19': np.float64(85.8), '20-29': np.float64(87.6), '30-39': np.float64(84.7), '40-49': np.float64(89.4), '50-59': np.float64(84.3), '60-69': np.float64(87.7), '70-79': np.float64(92.4), 'old': np.float64(86.59), 'new': np.float64(92.4)}
+2026-04-07 09:34:32,248 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0), np.float64(89.3), np.float64(87.56), np.float64(87.31)]
+2026-04-07 09:34:32,248 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62), np.float64(98.27), np.float64(97.91), np.float64(97.95)]
+2026-04-07 09:34:32,248 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917, 0.8998333333333334, 0.883, 0.88025]
+2026-04-07 09:34:32,248 [trainer.py] => ================================================================================
+2026-04-07 09:34:32,248 [trainer.py] => ================================================================================
+2026-04-07 09:34:32,256 [base.py] => Task 8 learning on class 80-90
+2026-04-07 09:34:32,260 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:34:32,260 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:34:32,260 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:39:13,152 [dir_fis_lora.py] => Task 8, Epoch 20/20 => Loss 0.091, Train_accy 97.18
+2026-04-07 09:39:13,153 [trainer.py] => Training time: 0h 4m 40s
+2026-04-07 09:39:24,932 [trainer.py] => Evaluation time: 0h 0m 11s
+2026-04-07 09:39:27,063 [dir_fis_lora_dc.py] => Task 8 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:39:27,063 [dir_fis_lora_dc.py] => Task 8 adaptive alpha => overlap 0.0649, alpha_t 0.5000
+2026-04-07 09:39:46,896 [dir_fis_lora_dc.py] => Task 8 decision consolidation => head 8, tau_mean 0.9794, tau_min 0.9537, tau_max 1.0100, bias_mean -0.0023, pre_ce 2.1716, post_ce 2.1484, old_kd 0.000002, L_task 2.1673, L_head 0.0000, L_score 0.0000, L_group 0.0042
+2026-04-07 09:39:46,902 [trainer.py] => Accuracy: {'total': np.float64(87.12), '00-09': np.float64(85.9), '10-19': np.float64(86.7), '20-29': np.float64(87.1), '30-39': np.float64(87.3), '40-49': np.float64(88.3), '50-59': np.float64(83.1), '60-69': np.float64(85.9), '70-79': np.float64(89.0), '80-89': np.float64(90.8), 'old': np.float64(86.66), 'new': np.float64(90.8)}
+2026-04-07 09:39:46,902 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0), np.float64(89.3), np.float64(87.56), np.float64(87.31), np.float64(87.12)]
+2026-04-07 09:39:46,902 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62), np.float64(98.27), np.float64(97.91), np.float64(97.95), np.float64(98.08)]
+2026-04-07 09:39:46,902 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917, 0.8998333333333334, 0.883, 0.88025, 0.8778888888888889]
+2026-04-07 09:39:46,902 [trainer.py] => ================================================================================
+2026-04-07 09:39:46,903 [trainer.py] => ================================================================================
+2026-04-07 09:39:46,915 [base.py] => Task 9 learning on class 90-100
+2026-04-07 09:39:46,918 [toolkit.py] => Total params:     104,147,383
+2026-04-07 09:39:46,918 [toolkit.py] => Trainable params: 376,330
+2026-04-07 09:39:46,918 [toolkit.py] => Trainable ratio:  0.3613%
+2026-04-07 09:44:27,520 [dir_fis_lora.py] => Task 9, Epoch 20/20 => Loss 0.097, Train_accy 97.32
+2026-04-07 09:44:27,521 [trainer.py] => Training time: 0h 4m 40s
+2026-04-07 09:44:40,520 [trainer.py] => Evaluation time: 0h 0m 12s
+2026-04-07 09:44:42,563 [dir_fis_lora_dc.py] => Task 9 consolidated active rank => mean 10.00, min 10, max 10
+2026-04-07 09:44:42,563 [dir_fis_lora_dc.py] => Task 9 adaptive alpha => overlap 0.0893, alpha_t 0.5000
+2026-04-07 09:45:02,301 [dir_fis_lora_dc.py] => Task 9 decision consolidation => head 9, tau_mean 0.9747, tau_min 0.9440, tau_max 1.0100, bias_mean -0.0024, pre_ce 2.1689, post_ce 2.1433, old_kd 0.000002, L_task 2.1536, L_head 0.0000, L_score 0.0000, L_group 0.0053
+2026-04-07 09:45:02,307 [trainer.py] => Accuracy: {'total': np.float64(86.03), '00-09': np.float64(84.8), '10-19': np.float64(79.9), '20-29': np.float64(86.9), '30-39': np.float64(88.4), '40-49': np.float64(86.4), '50-59': np.float64(82.5), '60-69': np.float64(85.9), '70-79': np.float64(87.5), '80-89': np.float64(92.7), '90-99': np.float64(85.3), 'old': np.float64(86.11), 'new': np.float64(85.3)}
+2026-04-07 09:45:02,307 [trainer.py] => (curve) top1 Acc: [np.float64(99.5), np.float64(97.35), np.float64(94.0), np.float64(91.85), np.float64(91.0), np.float64(89.3), np.float64(87.56), np.float64(87.31), np.float64(87.12), np.float64(86.03)]
+2026-04-07 09:45:02,307 [trainer.py] => (curve) top1 Acc with task: [np.float64(99.5), np.float64(99.2), np.float64(98.43), np.float64(98.28), np.float64(98.62), np.float64(98.27), np.float64(97.91), np.float64(97.95), np.float64(98.08), np.float64(97.95)]
+2026-04-07 09:45:02,307 [trainer.py] => (curve) top1 Acc task: [1.0, 0.9785, 0.9506666666666667, 0.92725, 0.917, 0.8998333333333334, 0.883, 0.88025, 0.8778888888888889, 0.867]
+2026-04-07 09:45:02,307 [trainer.py] => ================================================================================

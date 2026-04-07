@@ -1,0 +1,45 @@
+{
+    "seed" : [0],
+    "dataset" : "imagenet-r",
+    "data_path" : "/mnt/data/binhnt6/imagenet-r",
+    "load" : "vit_base_patch16_224_in21k",
+
+    "init_cls" : 20,
+    "increment" : 20,
+    "sessions" : 10,
+    "shuffle" : false,
+
+    "method" : "dir_fis_lora",
+    "basis_update_mode" : "realized_drift",
+    "optimizer" : "adam",
+    "scheduler" : "cosine",
+    "epochs" : 50,
+    "lrate" : 0.0005,
+    "fc_lrate" : 0.0005,
+    "weight_decay" : 0.0,
+    "batch_size" : 128,
+    "rank" : 10,
+    "rank_budget" : 20,
+    "max_rank" : 30,
+    "grow_rank" : 2,
+    "task_rank" : 10,
+    "warmup_batches" : 1,
+    "basis_growth_batches" : 10,
+    "num_workers" : 16,
+
+    "gamma" : 1.0,
+    "importance_decay" : 0.9,
+    "lambda" : 1000.0,
+    "novelty_threshold" : 0.15,
+
+    "reg_lambda_min" : 0.2,
+    "reg_alpha" : 1.0,
+    "reg_w_tau" : 0.5,
+    "reg_w_max" : 5.0,
+    "reg_new_dir_weight" : 0.05,
+    "importance_floor_frac" : 0.3,
+
+    "conflict_gate_enabled" : false,
+    "conflict_gate_strength" : 0.5,
+    "conflict_gate_floor" : 0.1
+}
